@@ -100,7 +100,7 @@ L9923:
     bpl L9940
         ; swooper is above samus
         ; negate relative position
-        jsr TwosComplement_
+        jsr TwosComplement
     L9940:
     ; now a contains the distance between samus and swooper on the y axis
     ; branch if Samus is not within a block's distance

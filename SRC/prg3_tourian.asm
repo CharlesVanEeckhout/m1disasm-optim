@@ -97,14 +97,6 @@ GotoUpdateBullet_CollisionWithMotherBrain:
 AreaRoutine:
     jmp AreaRoutine_Tourian                       ;Area specific routine.
 
-;The following routine returns the two's complement of the value stored in A.
-TwosComplement_:
-    eor #$FF
-    clc
-    adc #$01
-Exit__:
-    rts
-
 L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
@@ -599,7 +591,7 @@ Cannon_ShootFireball:
     ; pop instruction byte #$FC, #$FD or #$FE
     pla
     ; #$FC, #$FD or #$FE becomes #$04, #$03 or #$02
-    jsr TwosComplement_
+    jsr TwosComplement
     ; save to x and EnData0A
     tax
     sta EnData0A,y
@@ -810,7 +802,7 @@ SpawnCannonRoutine:
 @spawnCannon:
     ; high nibble of special item type is Cannons.0.instrListID
     lda ($00),y
-    jsr Adiv16_
+    jsr Adiv16
     sta Cannons.0.instrListID,x
     
     lda #$01
@@ -825,12 +817,12 @@ SpawnCannonRoutine:
     ora #$07
     sta Cannons.0.y,x
     pla
-    jsr Amul16_
+    jsr Amul16
     ora #$07
     sta Cannons.0.x,x
     
     ; set nametable for edge of the screen that scrolls in
-    jsr GetNameTableAtScrollDir_
+    jsr GetNameTableAtScrollDir
     sta Cannons.0.hi,x
 @RTS:
     rts
@@ -840,7 +832,7 @@ SpawnCannonRoutine:
 SpawnMotherBrainRoutine:
     lda #$01
     sta MotherBrainStatus
-    jsr GetNameTableAtScrollDir_
+    jsr GetNameTableAtScrollDir
     sta MotherBrainHi
     eor #$01
     tax
@@ -883,7 +875,7 @@ SpawnZebetiteRoutine:
     rts
 
 GetVRAMPtrHi:
-    jsr GetNameTableAtScrollDir_
+    jsr GetNameTableAtScrollDir
     asl
     asl
     ora #$21+$40
@@ -900,18 +892,12 @@ SpawnRinkaSpawnerRoutine:
     lda RinkaSpawners.0.status,x
     bpl RTS_9D87
     lda ($00),y
-    jsr Adiv16_
+    jsr Adiv16
     sta RinkaSpawners.0.status,x
-    jsr GetNameTableAtScrollDir_
+    jsr GetNameTableAtScrollDir
     sta RinkaSpawners.0.hi,x
     lda #$FF
 RTS_9D87:
-    rts
-
-GetNameTableAtScrollDir_:
-    lda PPUCTRL_ZP
-    eor ScrollDir
-    and #$01
     rts
 
 CannonInstrDelayTable:
@@ -962,7 +948,7 @@ MotherBrainStatusHandler:
     lda MotherBrainStatus
     beq RTS_9DF1
     jsr CommonJump_ChooseRoutine
-        .word Exit__    ;#$00=Mother brain not in room,
+        .word ExitSub    ;#$00=Mother brain not in room,
         .word MotherBrain_9E22     ;#$01=Mother brain in room
         .word MotherBrain_9E36     ;#$02=Mother brain hit
         .word MotherBrain_9E52     ;#$03=Mother brain dying
@@ -972,7 +958,7 @@ MotherBrainStatusHandler:
         .word MotherBrain_9FC0     ;#$07=Time bomb exploded
         .word MotherBrain_9F02_08     ;#$08=Initialize mother brain
         .word MotherBrain_9FDA     ;#$09
-        .word Exit__    ;#$0A=Mother brain already dead.
+        .word ExitSub    ;#$0A=Mother brain already dead.
 RTS_9DF1:
     rts
 
@@ -993,7 +979,7 @@ MotherBrain_9E22_CollideWithSamus:
     sec
     sbc #$80
     bpl L9E0E
-        jsr TwosComplement_
+        jsr TwosComplement
     L9E0E:
     cmp #$20
     bcs RTS_9DF1
@@ -1144,7 +1130,7 @@ SpawnRinka_InitPositionXY:
     sta EnY,x
     pla
     ; x position = (low nybble * #$10) + #$07
-    jsr Amul16_
+    jsr Amul16
     ora #$07
     sta EnX,x
     rts
@@ -1947,7 +1933,7 @@ ClearAllMetroidLatches:
 
 ClearCurrentMetroidLatchAndMetroidOnSamus:
     txa
-    jsr Adiv16_
+    jsr Adiv16
     tay
     jsr ClearMetroidLatch
     sta MetroidOnSamus

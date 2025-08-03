@@ -184,7 +184,7 @@ DrawIntroBackground:
     jsr ClearNameTables             ;($C158)Erase name table data.
     ldx #<PPUString_DrawIntroBackground.b                     ;Lower address of PPU information.
     ldy #>PPUString_DrawIntroBackground.b                     ;Upper address of PPU information.
-    jsr PreparePPUProcess_          ;($C20E) Writes background of intro screen to name tables.
+    jsr PreparePPUProcess          ;($C20E) Writes background of intro screen to name tables.
     lda #$01                        ;
     sta PalDataPending              ;Prepare to load palette data.
     sta SpareMemC5                  ;Not accessed by game.
@@ -2623,12 +2623,6 @@ PasswordRowsTbl:
     .byte $22, $A4                  ;
     .byte $22, $E4                  ;
 
-
-PreparePPUProcess:
-    stx $00                         ;Lower byte of pointer to PPU string
-    sty $01                         ;Upper byte of pointer to PPU string
-    jmp ProcessPPUString            ;($C30C)
-
 PrepareEraseTiles:
     stx $00                         ;PPU low address byte
     sty $01                         ;PPU high address byte
@@ -3196,7 +3190,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl0-2,y
         lda EndMessageStringTbl0-1,y
         tay
-        jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jsr PreparePPUProcess          ;($C20E)Prepare to write to PPU.
     L9A24:
     ;If not time to erase end message, branch
     lda HideShowEndMsg              ;
@@ -3210,7 +3204,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl1-2,y
         lda EndMessageStringTbl1-1,y
         tay
-        jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jmp PreparePPUProcess          ;($C20E)Prepare to write to PPU.
 Exit100:
     rts                             ;Exit from above and below routines.
 
@@ -3332,7 +3326,7 @@ L9AE4:
     sta SpritePointerIndex          ;
     ldx #<LA052.b                     ;Loads the screen where Samus stands on-->
     ldy #>LA052.b                     ;the surface of the planet in end of game.
-    jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jsr PreparePPUProcess          ;($C20E)Prepare to write to PPU.
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
     lda #sfxMulti_EndMusic          ;Initiate end game music.
     sta MultiSFXFlag                ;
@@ -3619,7 +3613,7 @@ LoadCredits:
     ldx CreditsPointerTbl,y         ;Base is $A291. Lower byte of pointer to PPU string.
     lda CreditsPointerTbl+1,y       ;Upper byte of pointer to PPU string.
     tay
-    jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jmp PreparePPUProcess          ;($C20E)Prepare to write to PPU.
 @RET:
     rts
 
@@ -3947,7 +3941,7 @@ EndGamePalWrite:
     lda EndGamePalPntrTbl-1,y       ;High byte of PPU data pointer.
     ldx EndGamePalPntrTbl-2,y       ;Low byte of PPU data pointer.
     tay                             ;
-    jsr PreparePPUProcess_          ;($C20E)Prepare to write data string to PPU.
+    jsr PreparePPUProcess          ;($C20E)Prepare to write data string to PPU.
     lda #$3F                        ;
     sta PPUADDR                  ;
     lda #$00                        ;
