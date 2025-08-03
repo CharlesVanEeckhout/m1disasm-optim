@@ -1003,21 +1003,11 @@ ExtractNibbles:
 
 ;---------------------------[ NMI and PPU control routines ]--------------------------------
 
-; Wait for the NMI to end.
-WaitNMIPass:
-    ;Indicate currently in NMI.
-    jsr ClearNMIStat
-    @loop:
-        ;Wait for NMI to end before continuing.
-        lda NMIStatus
-        beq @loop
-    rts
-
-ClearNMIStat: ;($C434)
-    ;Clear NMI byte to indicate the game is currently running NMI routines.
-    lda #$00
-    sta NMIStatus
-    rts
+ScreenOn:
+    ;BG & SPR visibility = on
+    lda PPUMASK_ZP
+    ora #(PPUMASK_SHOW8BG | PPUMASK_SHOW8OBJ | PPUMASK_BG_ON | PPUMASK_OBJ_ON).b
+    bne WriteAndWait ;Branch always
 
 ScreenOff:
     ; BG & SPR visibility = off
@@ -1029,20 +1019,19 @@ WriteAndWait: ;($C43D)
     ;Update value to be loaded into PPU control register.
     sta PPUMASK_ZP
 
-WaitNMIPass_:
+WaitNMIPass:
     ;Indicate currently in NMI.
-    jsr ClearNMIStat
+    ;Clear NMI byte to indicate the game is currently running NMI routines.
+    lda #$00
+    sta NMIStatus
     @loop:
         ;Wait for NMI to end before continuing.
         lda NMIStatus
         beq @loop
+ExitSub:
     rts
 
-ScreenOn:
-    ;BG & SPR visibility = on
-    lda PPUMASK_ZP
-    ora #(PPUMASK_SHOW8BG | PPUMASK_SHOW8OBJ | PPUMASK_BG_ON | PPUMASK_OBJ_ON).b
-    bne WriteAndWait ;Branch always
+
 
 ;Update the actual PPU control registers.
 
@@ -1054,18 +1043,13 @@ WritePPUCtrl:
     sta PPUMASK
     lda MirrorCntrl
     ;($C4D9)Setup vertical or horizontal mirroring.
-    jsr PrepPPUMirror
+    jmp PrepPPUMirror
 
-ExitSub:
-    rts                             ;Exit subroutines.
 
 ;Turn off both screen and NMI.
 
 ScreenNmiOff:
-    ;BG & SPR visibility = off
-    lda PPUMASK_ZP
-    and #~(PPUMASK_BG_ON | PPUMASK_OBJ_ON).b
-    jsr WriteAndWait                ;($C43D)Wait for end of NMI.
+    jsr ScreenOff
     
     ;Prepare to turn off NMI in PPU.
     lda PPUCTRL_ZP
@@ -1075,18 +1059,6 @@ ScreenNmiOff:
     sta PPUCTRL
     rts
 
-;The following routine does not appear to be used.
-
-    ;Enable VBlank.
-    lda PPUCTRL_ZP
-    ora #PPUCTRL_VBLKNMI_ON
-    ;Write PPU control register 0 and PPU status byte.
-    sta PPUCTRL_ZP
-    sta PPUCTRL
-    ;Turn sprites and screen on.
-    lda PPUMASK_ZP
-    ora #PPUMASK_OBJ_ON | PPUMASK_BG_ON | PPUMASK_SHOW8OBJ | PPUMASK_SHOW8BG.b
-    bne WriteAndWait ;Branch always.
 
 VBOffAndHorzWrite:
     lda PPUCTRL_ZP
@@ -4792,7 +4764,7 @@ ElevatorD8BF:
         lda #_id_Palette00+1.b
     @endIf_D:
     sta PalDataPending
-    jsr WaitNMIPass_
+    jsr WaitNMIPass
     ; update samus palette
     jsr SelectSamusPal
     ;($D92C)Start music.
