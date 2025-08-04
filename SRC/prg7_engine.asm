@@ -7383,7 +7383,11 @@ GetRoomNum:
     rol                             ;Restore value of a
     adc #$FF                        ;A=#$01 if scrolling left, A=#$02 if scrolling right.
     pha                             ;Save A.
-    jsr OnNameTable0                ;($EC93)Y=1 if name table=0, Y=0 if name table=3.
+    ;If currently on name table 0, return #$01. Else return #$00.
+    lda PPUCTRL_ZP
+    eor #$01
+    and #$01
+    tay
     pla                             ;Restore A.
     and ScrollBlockOnNameTable3,y   ;
     sec                             ;
@@ -8467,13 +8471,6 @@ LoadPipeBugHole:
     lda #$03
     bne Lx237
 
-OnNameTable0:
-    ;If currently on name table 0, return #$01. Else return #$00.
-    lda PPUCTRL_ZP
-    eor #$01
-    and #$01
-    tay
-    rts
 
 ; Despawn offscreen room sprites to make room for new room sprites.
 UpdateRoomSpriteInfo:

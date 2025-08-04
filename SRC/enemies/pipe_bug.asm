@@ -68,11 +68,11 @@ PipeBugApplySpeed:
     sta Temp04_SpeedY
 
     ; apply speed
-    jsr StoreEnemyPositionToTemp_
+    jsr StoreEnemyPositionToTemp
     jsr ApplySpeedToPosition
     ; remove bug if it is out of bounds
     bcc PipeBugDelete
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
     ; fallthrough
 
 ;Exit 1

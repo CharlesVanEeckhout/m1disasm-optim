@@ -126,7 +126,7 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     tay
     ; put ridley's position in temp
     ldx #$00
-    jsr StoreEnemyPositionToTemp_
+    jsr StoreEnemyPositionToTemp
     ; set x to y
     tya
     tax
@@ -155,7 +155,7 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     lda #enemyStatus_Resting
     sta EnsExtra.0.status,x
     ; set projectile's position to its initial position
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
     jmp LEB6E
 
 RidleyProjectileOffsetX:

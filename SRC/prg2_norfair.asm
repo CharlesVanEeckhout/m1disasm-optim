@@ -503,27 +503,6 @@ CommonEnemyJump_00_01_02:
 
 ;-------------------------------------------------------------------------------
 
-StoreEnemyPositionToTemp_:
-    lda EnY,x
-    sta Temp08_PositionY
-    lda EnX,x
-    sta Temp09_PositionX
-    lda EnsExtra.0.hi,x
-    sta Temp0B_PositionHi
-    rts
-
-LoadEnemyPositionFromTemp_:
-    lda Temp0B_PositionHi
-    and #$01
-    sta EnsExtra.0.hi,x
-    lda Temp08_PositionY
-    sta EnY,x
-    lda Temp09_PositionX
-    sta EnX,x
-    rts
-
-;-------------------------------------------------------------------------------
-
 .include "enemies/squeept.asm"
 
 ;-------------------------------------------------------------------------------
