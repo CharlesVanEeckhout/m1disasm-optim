@@ -503,34 +503,6 @@ CommonEnemyJump_00_01_02:
 .include "enemies/swooper.asm"
 
 ;-------------------------------------------------------------------------------
-; is this unused?
-L9963:
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    jmp CommonEnemyJump_00_01_02
-
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    jmp CommonEnemyJump_00_01_02
-
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    lda EnemyMovementPtr
-    cmp #$02
-    bne L9993
-    cmp EnsExtra.0.status,x
-    bne L9993
-    jsr CommonJump_CrawlerAIRoutine_ShouldCrawlerMove
-    and #$03
-    bne L9993
-        jmp L984D
-    L9993:
-    jmp CommonEnemyJump_00_01_02
-
-;-------------------------------------------------------------------------------
 ; Crawler Routine
 .include "enemies/crawler.asm"
 

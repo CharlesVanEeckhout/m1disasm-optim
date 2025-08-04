@@ -24,8 +24,6 @@ CommonJump_01: ;$8003 (yes anim, no common AI)
     jmp LF438
 CommonJump_02: ;$8006 (no anim, no common AI)
     jmp LF416
-CommonJump_CrawlerAIRoutine_ShouldCrawlerMove: ;$8009
-    jmp CrawlerAIRoutine_ShouldCrawlerMove
 CommonJump_UpdateEnemyAnim: ;$800C
     jmp UpdateEnemyAnim             ;($E094)
 CommonJump_InitEnAnimIndex: ;$800F
@@ -66,17 +64,6 @@ CommonJump_SubtractHealth: ;$8042
     jmp SubtractHealth              ;($CE92)
 CommonJump_Base10Subtract: ;$8045
     jmp Base10Subtract              ;($C3FB)
-
-; Crawler jump table
-CrawlerMovementRoutinesTable:
-    .word EnemyMoveOnePixelRight-1
-    .word EnemyMoveOnePixelLeft-1
-    .word EnemyMoveOnePixelDown-1
-    .word EnemyMoveOnePixelDown-1
-    .word EnemyMoveOnePixelLeft-1
-    .word EnemyMoveOnePixelRight-1
-    .word EnemyMoveOnePixelUp-1
-    .word EnemyMoveOnePixelUp-1
 
 ;-------------------------------------------------------------------------------
 ; A common enemy AI/movement routine
@@ -1470,8 +1457,4 @@ WriteDoorBGTiles_Common:
 DoorXTable:
     .byte $E8, $10
 
-.byte $60, $AD, $91, $69, $8D, $78, $68, $AD, $92, $69, $8D, $79, $68, $A9
-.byte $00, $85, $00, $85, $02, $AD, $97, $69, $29, $80, $F0, $06, $A5, $00, $09, $80
-.byte $85, $00, $AD, $97, $69, $29
 
-; EoF

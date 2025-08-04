@@ -1,7 +1,21 @@
 ; Zoomer Routine (Crawler)
 CrawlerAIRoutine:
     ; move only 6 frames out of 8 (0.75px per frame)
-    jsr CommonJump_CrawlerAIRoutine_ShouldCrawlerMove
+    ; load enemy slot into a
+    txa
+    ; divide by 8
+    lsr
+    lsr
+    lsr
+    ; add frame count
+    adc FrameCount
+    ; divide by two
+    lsr
+    ; this returns
+    ; enemy slot  %----7654
+    ; frame count %07654321
+    ; whenever this is called, only the bits 0-1 are used
+    ; if bits 0-1 are zero, the crawler does not move
     and #$03
     beq Crawler03
 
@@ -140,7 +154,7 @@ CrawlerOutsideCornerCheck:
         ; at outside corner, stick to wall
         jsr Crawler11
         sta EnData0A,x
-        jsr CrawlerReorientSprite
+        jmp CrawlerReorientSprite
     @RTS:
     rts
 
@@ -164,4 +178,16 @@ JumpByRTSToMovementRoutine:
     lda CrawlerMovementRoutinesTable,y
     pha
     rts
+
+; Crawler jump table
+CrawlerMovementRoutinesTable:
+    .word EnemyMoveOnePixelRight-1
+    .word EnemyMoveOnePixelLeft-1
+    .word EnemyMoveOnePixelDown-1
+    .word EnemyMoveOnePixelDown-1
+    .word EnemyMoveOnePixelLeft-1
+    .word EnemyMoveOnePixelRight-1
+    .word EnemyMoveOnePixelUp-1
+    .word EnemyMoveOnePixelUp-1
+
 
