@@ -35,6 +35,7 @@ KraidBranch_Exit:
 
 ;-------------------------------------------------------------------------------
 ; Kraid Projectile
+KraidNailAIRoutine:
 KraidLintAIRoutine:
     ; branch if lint is invisible
     lda EnData05,x
@@ -87,11 +88,6 @@ KraidLintDraw:
     jmp LF416
 
 ;-------------------------------------------------------------------------------
-; Kraid Projectile 2
-KraidNailAIRoutine: ; L9B2C
-    jmp KraidLintAIRoutine
-
-;-------------------------------------------------------------------------------
 ; Kraid Subroutine 1
 KraidUpdateAllProjectiles: ; L9B2F
     ldx #$50 ; For each of Kraid's projectiles
@@ -102,6 +98,7 @@ KraidUpdateAllProjectiles: ; L9B2F
         sbc #$10
         tax
         bne @loop
+KraidUpdateProjectile_Exit:
     rts
 
 ;-------------------------------------------------------------------------------
@@ -176,30 +173,18 @@ KraidUpdateProjectile:
     ; get x offset from table
     lda KraidProjectileOffsetX-2,y
     sta Temp05_SpeedX
-
-; The Brinstar Kraid code makes an incorrect assumption about X, which leads to
-;  a crash when attempting to spawn him
-    .IF BANK != 1
-        ; push x to stack
-        txa
-        pha
-    .ENDIF
+    ; push x to stack
+    txa
+    pha
     ; store kraid's position in temp
     ldx #$00
     jsr StoreEnemyPositionToTemp
-    .IF BANK != 1
-        ; pull x from stack
-        pla
-        tax
-    .ENDIF
+    ; pull x from stack
+    pla
+    tax
     ; apply offset to kraid's position
     jsr ApplySpeedToPosition
 
-    .IF BANK == 1
-        ; load projectile's enemy slot offset into x
-        ; (BUG! this is actually kraid's enemy slot offset) 
-        ldx PageIndex
-    .ENDIF
     ; exit if initial position for projectile is out of bounds
     bcc KraidUpdateProjectile_Exit
     ; set projectile status to enemyStatus_Resting if it was enemyStatus_NoEnemy
