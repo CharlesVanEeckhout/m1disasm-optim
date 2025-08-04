@@ -1274,7 +1274,7 @@ LoadSQ1SQ2Channels:
 WriteSQCntrl0:
     ;Load SQ channel volume data. If zero, branch to exit.
     lda SQ1VolumeEnvelopeIndex,x
-    beq RTS_BA36
+    beq LoadSQ1SQ2Periods@RTS
     
     sta VolumeEnvelopeIndex
     jsr LoadSQ1SQ2Periods           ;($BA08)Load SQ1 and SQ2 control information.

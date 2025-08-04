@@ -11705,72 +11705,58 @@ ApplySpeedToPosition:
     ; apply y speed to y position
     lda Temp04_SpeedY
     clc
-    bmi @else_A
+    bmi @negative_Y
         ; dont apply y speed if it is zero
-        beq @endIf_A
+        beq @skip_Y
         ; positive y speed
         adc Temp08_PositionY
         bcs @then_B
             cmp #$F0
-            bcc @endIf_B
+            bcc @save_Y
         @then_B:
             ; position is greater or equal to 240px, we must wrap around
             adc #$0F ; carry is set, so this adds #$10
-            ; if screen scrolls horizontally, this movement has failed bc it would go out of bounds
-            ldy Temp02_ScrollDir
-            bne @exit_failure
-            ; screen scrolls vertically, update high byte
-            inc Temp0B_PositionHi
-        @endIf_B:
-        ; save new y position
-        sta Temp08_PositionY
-        jmp @endIf_A
-    @else_A:
+            bcs @common_Y ; branch always
+    @negative_Y:
         ; negative y speed
         adc Temp08_PositionY
-        bcs @endIf_C
+        bcs @save_Y
             ; position is lesser than 0px, we must wrap around
             sbc #$0F ; carry is set, so this subtracts #$10
+            @common_Y:
             ; if screen scrolls horizontally, this movement has failed bc it would go out of bounds
             ldy Temp02_ScrollDir
             bne @exit_failure
             ; screen scrolls vertically, update high byte
             inc Temp0B_PositionHi
-        @endIf_C:
-        ; save new y position
-        sta Temp08_PositionY
-    @endIf_A:
+    @save_Y:
+    ; save new y position
+    sta Temp08_PositionY
+    @skip_Y:
     
     ; apply x speed to x position
     lda Temp05_SpeedX
     clc
-    bmi @else_D
+    bmi @negative_X
         ; dont apply x speed if it is zero
         beq @exit_success
         ; positive x speed
         adc Temp09_PositionX
-        bcc @endIf_E
-            ; position is greater or equal to 256px, we must wrap around
-            ; if screen scrolls vertically, this movement has failed bc it would go out of bounds
-            ldy Temp02_ScrollDir
-            beq @exit_failure
-            ; screen scrolls horizontally, update high byte
-            inc Temp0B_PositionHi
-        @endIf_E:
-        ; save new x position
-        jmp @endIf_F
-    @else_D:
+        bcc @save_X
+            bcs @common_X ; branch always
+    @negative_X:
         adc Temp09_PositionX
-        bcs @endIf_F
+        bcs @save_X
+            @common_X:
             ; position is lesser than 0px, we must wrap around
             ; if screen scrolls vertically, this movement has failed bc it would go out of bounds
             ldy Temp02_ScrollDir
             beq @exit_failure
             ; screen scrolls horizontally, update high byte
             inc Temp0B_PositionHi
-        @endIf_F:
-        ; save new x position
-        sta Temp09_PositionX
+    @save_X:
+    ; save new x position
+    sta Temp09_PositionX
 
 @exit_success:
     ; movement was successful, set carry
