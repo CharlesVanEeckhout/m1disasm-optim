@@ -22,7 +22,7 @@ RidleyBranch_Normal:
     sta EnemyFlipAfterDisplacementAnimIndex
     lda #EnAnim_0E - EnAnimTbl.b
     sta EnemyFlipAfterDisplacementAnimIndex+1.b
-    jsr CommonJump_EnemyFlipAfterDisplacement
+    jsr EnemyFlipAfterDisplacement
     jsr RidleyTryToLaunchProjectile
 
 RidleyBranch_Exit:
@@ -142,7 +142,7 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     lda #$F8
     sta Temp04_SpeedY
     ; apply offset to ridley's position for use as projectile's position
-    jsr CommonJump_ApplySpeedToPosition
+    jsr ApplySpeedToPosition
     ; exit if projectile's initial position is out of bounds
     bcc RTS_9AA9
     ; set EnSpecialAttribs to #$00
@@ -156,7 +156,7 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     sta EnsExtra.0.status,x
     ; set projectile's position to its initial position
     jsr LoadPositionFromTemp
-    jmp CommonJump_0E
+    jmp LEB6E
 
 RidleyProjectileOffsetX:
     .byte $08, -$08

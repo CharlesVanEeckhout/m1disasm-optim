@@ -42,13 +42,13 @@ RioAIRoutine:
 RioExitA:
     ; change animation frame every 3 frames
     lda #$03
-    jmp CommonJump_00
+    jmp LF410
 
 RioExit_Explode:
-    jmp CommonJump_02
+    jmp LF416
 
 RioExit_Resting:
     ; change animation frame every 8 frames
     lda #$08
-    jmp CommonJump_01
+    jmp LF438
 

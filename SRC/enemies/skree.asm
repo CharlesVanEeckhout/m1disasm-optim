@@ -57,15 +57,15 @@ SkreeExit_Active:
     ; skree is active
     ; change animation frame every 2 frames
     lda #$02
-    jmp CommonJump_00
+    jmp LF410
 
 SkreeExit_Resting:
     ; skree is resting (hanging on the ceiling)
     ; change animation frame every 8 frames
     lda #$08
-    jmp CommonJump_01
+    jmp LF438
 
 SkreeExit_Explode:
     ; skree is exploding
-    jmp CommonJump_02
+    jmp LF416
 

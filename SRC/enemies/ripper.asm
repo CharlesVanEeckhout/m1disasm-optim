@@ -3,7 +3,7 @@ RipperAIRoutine:
     cmp #enemyStatus_Explode
     beq Ripper01
         ; enemy is not exploding, call CommonJump_0A
-        jsr CommonJump_0A
+        jsr LFBCA
     Ripper01:
     .if BANK == 1 || BANK == 4
         jmp CommonEnemyStub2 ;sidehopper.asm

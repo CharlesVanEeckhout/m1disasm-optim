@@ -237,7 +237,7 @@ L98A9:
     ; load Samus position
     jsr StoreSamusPositionToTemp
     ; add offset to Samus position
-    jsr CommonJump_ApplySpeedToPosition
+    jsr ApplySpeedToPosition
     ; set as metroid position
     jsr LoadPositionFromTemp
     jmp L9967
@@ -277,7 +277,7 @@ L9967:
     sty HealthChange+1.b
     ldy #$04
     sty HealthChange
-    jsr CommonJump_SubtractHealth
+    jsr SubtractHealth
     ; Set MetroidOnSamus to true
     ldy #$01
 L999E:
@@ -324,7 +324,7 @@ MetroidLatchOffsetY:
     .byte $00, $FC, $F9, $F7, $F6, $F6, $F5, $F5, $F5, $F6, $F6, $F8
 
 StoreSamusPositionToTemp:
-    ; put Samus position as parameters to CommonJump_ApplySpeedToPosition
+    ; put Samus position as parameters to ApplySpeedToPosition
     lda ObjX
     sta Temp09_PositionX
     lda ObjY

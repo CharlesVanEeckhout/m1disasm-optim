@@ -93,7 +93,7 @@ AreaPointers:
     .byte $60, $EA, $EA
 
 AreaRoutine:
-    jmp AreaRoutineStub ; Just an RTS
+    jmp ExitSub ; Just an RTS
 
 L95CC:
     .byte $1D                       ;Kraid's room.
@@ -116,7 +116,6 @@ AreaSamusY:
 AreaPalToggle:
     .byte _id_Palette05+1
 
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -132,7 +131,7 @@ AreaMellowAnimIndex:
 
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
-    jsr CommonJump_ChooseRoutine
+    jsr ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - ceiling sidehopper
         .word ExitSub ; 02 - unused enemy type that doesn't properly clear itself
@@ -289,7 +288,6 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
 
 EnAccelYTable:
     .byte $7F, $70, $70, $90, $90, $00, $00, $7F, $80, $00, $54, $70, $00, $00, $00, $00, $00, $00, $00, $00
@@ -602,14 +600,14 @@ CommonEnemyJump_00_01_02:
     beq @explode
         ; enemy default
         lda $00
-        jmp CommonJump_00
+        jmp LF410
     @resting:
         ; enemy resting
         lda $01
-        jmp CommonJump_01
+        jmp LF438
     @explode:
         ; enemy explode
-        jmp CommonJump_02
+        jmp LF416
 
 ;-------------------------------------------------------------------------------
 
@@ -638,9 +636,6 @@ CommonEnemyJump_00_01_02:
 ; Note: For this bank the functions StorePositionToTemp and LoadPositionFromTemp
 ;  are in are in kraid.asm. Extract those functions from that file if you plan
 ;  on removing it.
-
-AreaRoutineStub:
-    rts
 
 ; What's this table?
 TileBlastFrame00:

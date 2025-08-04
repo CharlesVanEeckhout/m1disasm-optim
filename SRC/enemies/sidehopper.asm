@@ -12,7 +12,7 @@ Sidehopper_Common:
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     beq CommonEnemyStub2
-        jsr CommonJump_EnemyFlipAfterDisplacement
+        jsr EnemyFlipAfterDisplacement
 CommonEnemyStub2:
     lda #$06
     sta $00

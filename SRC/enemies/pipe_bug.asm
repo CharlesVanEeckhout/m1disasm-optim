@@ -56,11 +56,11 @@ PipeBugApplySpeed:
     bne PipeBugExit
     
     ; get y speed
-    jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
+    jsr EnemyGetDeltaY_UsingAcceleration
     ; push y speed to stack
     pha
     ; get x speed
-    jsr CommonJump_EnemyGetDeltaX_UsingAcceleration
+    jsr EnemyGetDeltaX_UsingAcceleration
     ; set x speed
     sta Temp05_SpeedX
     ; set y speed
@@ -69,7 +69,7 @@ PipeBugApplySpeed:
 
     ; apply speed
     jsr StorePositionToTemp
-    jsr CommonJump_ApplySpeedToPosition
+    jsr ApplySpeedToPosition
     ; remove bug if it is out of bounds
     bcc PipeBugDelete
     jsr LoadPositionFromTemp
@@ -79,7 +79,7 @@ PipeBugApplySpeed:
 PipeBugExit:
     ; change animation frame every 3 frames
     lda #$03
-    jmp CommonJump_01 ; Common Enemy Handler
+    jmp LF438 ; Common Enemy Handler
 
 ;Exit 2
 PipeBugDelete:

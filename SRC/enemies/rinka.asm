@@ -158,7 +158,7 @@ L9AB0:
         lda EnsExtra.0.hi,x
         sta Temp0B_PositionHi
         ; apply speed
-        jsr CommonJump_ApplySpeedToPosition
+        jsr ApplySpeedToPosition
         ; branch if movement succeeded
         bcs L9AF1
             ; movement failed, remove rinka
@@ -169,7 +169,7 @@ L9AB0:
     L9AF4:
     ; change animation frame every 8 frames
     lda #$08
-    jmp CommonJump_01
+    jmp LF438
 
 
 SetRinkaSpeed:

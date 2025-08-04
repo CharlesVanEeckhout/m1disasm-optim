@@ -94,10 +94,8 @@ AreaPointers:
     .byte $60, $EA, $EA
 
 AreaRoutine:
-    jmp RTS_Polyp                       ;Area specific routine.(RTS)
+    jmp ExitSub                       ;Area specific routine.(RTS)
 
-L95CC:
-    .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Norfair             ;Norfair music init flag.
 AreaEnemyDamage:
@@ -117,7 +115,6 @@ AreaSamusY:
 AreaPalToggle:
     .byte _id_Palette00+1
 
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -134,7 +131,7 @@ AreaMellowAnimIndex:
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
-    jsr CommonJump_ChooseRoutine
+    jsr ChooseRoutine
         .word SwooperAIRoutine00 ; 00 - swooper has not seen samus
         .word SwooperAIRoutine01 ; 01 - swooper targetting samus
         .word RipperAIRoutine ; 02 - ripper II
@@ -291,7 +288,6 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
 
 EnAccelYTable:
     .byte $80, $80, $00, $00, $00, $00, $00, $00, $00, $00, $E0, $16, $15, $7F, $7F, $7F, $00, $00, $00, $00
@@ -480,15 +476,14 @@ CommonEnemyJump_00_01_02:
     beq @explode
         ; enemy default
         lda $00
-        jmp CommonJump_00
+        jmp LF410
     @resting:
         ; enemy resting
         lda $01
-        jmp CommonJump_01
+        jmp LF438
     @explode:
-    L984D:
         ; enemy explode
-        jmp CommonJump_02
+        jmp LF416
 
 ;-------------------------------------------------------------------------------
 

@@ -44,7 +44,7 @@ L9A88:
     
     ; make squeept move in their jump trajectory
     ; apply gravity to y speed and get delta y
-    jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
+    jsr EnemyGetDeltaY_UsingAcceleration
     
     ldx PageIndex
     ; set x speed to 0
@@ -66,7 +66,7 @@ L9A88:
     
     ; apply speed
     jsr StorePositionToTemp
-    jsr CommonJump_ApplySpeedToPosition
+    jsr ApplySpeedToPosition
     
     ; load lava y position
     lda #$E8
@@ -92,11 +92,11 @@ SqueeptExit_Resting:
     ; squeept is resting (jumping and falling)
     ; change animation frame every 2 frames
     lda #$02
-    jmp CommonJump_01
+    jmp LF438
 
 SqueeptExit_Explode:
     ; squeept is exploding
-    jmp CommonJump_02
+    jmp LF416
 
 SqueeptSpeedYTable:
     .byte $F6, $F8, $F6, $FA

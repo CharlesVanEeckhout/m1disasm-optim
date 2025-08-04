@@ -61,13 +61,13 @@ Crawler02:
 Crawler03:
     ; change animation frame every 3 frames
     lda #$03
-    jsr CommonJump_UpdateEnemyAnim
+    jsr UpdateEnemyAnim
 CrawlerExit_Explode:
-    jmp CommonJump_02
+    jmp LF416
 
 .if BANK == 2 || BANK == 5
     CrawlerExit_Resting:
-        jmp CommonJump_01
+        jmp LF438
 .endif
 
 CrawlerReorientSprite:
@@ -79,7 +79,7 @@ CrawlerReorientSprite:
     rol
     tay
     lda CrawlerAnimIndexTable,y
-    jmp CommonJump_InitEnAnimIndex
+    jmp InitEnAnimIndex
 
 .if BANK == 1
     CrawlerAnimIndexTable:

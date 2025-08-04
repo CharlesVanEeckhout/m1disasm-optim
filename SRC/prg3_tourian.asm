@@ -122,7 +122,6 @@ AreaSamusY:
 AreaPalToggle:
     .byte _id_Palette05+1
 
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -139,7 +138,7 @@ AreaMellowAnimIndex:
 ; Enemy AI Jump Table
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
-    jsr CommonJump_ChooseRoutine
+    jsr ChooseRoutine
         .word MetroidAIRoutine ; 00 - red metroid
         .word MetroidAIRoutine ; 01 - green metroid
         .word L9A27 ; 02 - i dunno but it takes 30 damage with varia
@@ -297,7 +296,6 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
     
 EnAccelYTable:
     .byte $18, $30, $00, $C0, $D0, $00, $00, $7F, $80, $58, $54, $70, $00, $00, $00, $00, $00, $00, $00, $00
@@ -427,14 +425,14 @@ CommonEnemyJump_00_01_02:
     beq @explode
         ; enemy default
         lda $00
-        jmp CommonJump_00
+        jmp LF410
     @resting:
         ; enemy resting
         lda $01
-        jmp CommonJump_01
+        jmp LF438
     @explode:
         ; enemy explode
-        jmp CommonJump_02
+        jmp LF416
 
 ;-------------------------------------------------------------------------------
 ; Metroid Routine
@@ -444,7 +442,7 @@ CommonEnemyJump_00_01_02:
 ; ???
 L9A27:
     lda #$01
-    jmp CommonJump_01
+    jmp LF438
 
 ;-------------------------------------------------------------------------------
 ; Rinka Routine??
@@ -622,7 +620,7 @@ Cannon_ShootFireball:
     tya
     tax
     ; apply offset to cannon position
-    jsr CommonJump_ApplySpeedToPosition
+    jsr ApplySpeedToPosition
     ; use as fireball position
     jsr LoadPositionFromTemp
     ldx CannonIndex
@@ -646,7 +644,7 @@ DrawCannon_Escape:
     sta EnsExtra.14.hi
     lda #$E0
     sta PageIndex
-    jmp CommonJump_DrawEnemy
+    jmp DrawEnemy
 
 ; return y=#$00 if cannon is on screen and y=#$01 if not
 UpdateCannon_CheckIfOnScreen:
@@ -951,7 +949,7 @@ CannonFireballYOffsetTable:
 MotherBrainStatusHandler:
     lda MotherBrainStatus
     beq RTS_9DF1
-    jsr CommonJump_ChooseRoutine
+    jsr ChooseRoutine
         .word ExitSub    ;#$00=Mother brain not in room,
         .word MotherBrain_9E22     ;#$01=Mother brain in room
         .word MotherBrain_9E36     ;#$02=Mother brain hit
@@ -996,7 +994,7 @@ MotherBrain_9E22_CollideWithSamus:
     sta HealthChange+1.b
     lda #$38
     sta SamusIsHit
-    jmp CommonJump_SubtractHealth
+    jmp SubtractHealth
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9E22:
@@ -1173,7 +1171,7 @@ MotherBrain_9F02_08:
         sta PageIndex
         lda PPUStrIndex
         bne RTS_9F38
-        jsr CommonJump_DrawTileBlast
+        jsr DrawTileBlast
         bcs RTS_9F38
     L9F33:
     inc MotherBrainQtyHits
@@ -1243,7 +1241,7 @@ L9F69:
     sta TileBlastWRAMPtr+1
     lda #$00
     sta PageIndex
-    jmp CommonJump_DrawTileBlast
+    jmp DrawTileBlast
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9FC0:
@@ -1371,7 +1369,7 @@ MotherBrain_DrawSprites:
     lda MotherBrainAnimFrameTable,y
     sta EnsExtra.14.animFrame
     ; draw mother brain enemy
-    jsr CommonJump_DrawEnemy
+    jsr DrawEnemy
     
     ; branch if bit 7 of eye delay is set
     lda MotherBrainAnimEyeDelay
@@ -1380,7 +1378,7 @@ MotherBrain_DrawSprites:
         ; draw the eyes of mother brain
         lda MotherBrainAnimFrameTable+4
         sta EnsExtra.14.animFrame
-        jsr CommonJump_DrawEnemy
+        jsr DrawEnemy
     @endIf_A:
     rts
 
@@ -1431,7 +1429,7 @@ MotherBrain_Disintegrate:
     lda #$00
     sta TileBlastAnimFrame
     sta PageIndex
-    jmp CommonJump_DrawTileBlast
+    jmp DrawTileBlast
 
 MotherBrainDeathString:
 MotherBrainDeathString_1:
@@ -1519,7 +1517,7 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
         ; set TileBlast slot
         stx PageIndex
         ; go remove the glass shield
-        jsr CommonJump_DrawTileBlast
+        jsr DrawTileBlast
         ; restore projectile slot
         pla
         sta PageIndex
@@ -1675,7 +1673,7 @@ UpdateAllRinkaSpawners:
     lda #$00
     sta EnSpecialAttribs,x
     sta EnIsHit,x
-    jsr CommonJump_0E
+    jsr LEB6E
     ; set rinka frame to nothing (it will fade into view)
     lda #$F7
     sta EnsExtra.0.animFrame,x
@@ -1722,13 +1720,13 @@ UpdateEndTimer:
     sta $03
     lda #$01
     sec
-    jsr CommonJump_Base10Subtract
+    jsr Base10Subtract
     sta EndTimer
     ; BCD decrement high byte of timer if overflow
     lda EndTimer+1
     sta $03
     lda #$00
-    jsr CommonJump_Base10Subtract
+    jsr Base10Subtract
     sta EndTimer+1
     
     ; play alarm sound effect every 32 frames
@@ -1787,7 +1785,7 @@ DrawEndTimerEnemy:
     ; remember page pos for later
     lda SpritePagePos
     pha
-    jsr CommonJump_DrawEnemy
+    jsr DrawEnemy
     ; exit if past page pos is the same as current page pos (sprite failed to draw)
     pla
     cmp SpritePagePos
@@ -1875,7 +1873,7 @@ LA2BA:
         ; update zebetite gfx
         txa
         pha
-        jsr CommonJump_DrawTileBlast
+        jsr DrawTileBlast
         pla
         tax
         ; (when is the carry flag set/unset here?)

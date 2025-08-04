@@ -17,55 +17,6 @@
 
 ;-----------------------------------------[ Start of code ]------------------------------------------
 
-; These first three all jump to different points within the same procedure
-CommonJump_00: ;$8000 (yes anim, yes common AI)
-    jmp LF410
-CommonJump_01: ;$8003 (yes anim, no common AI)
-    jmp LF438
-CommonJump_02: ;$8006 (no anim, no common AI)
-    jmp LF416
-CommonJump_UpdateEnemyAnim: ;$800C
-    jmp UpdateEnemyAnim             ;($E094)
-CommonJump_InitEnAnimIndex: ;$800F
-    jmp InitEnAnimIndex
-CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0: ;$8012 (unused?)
-    jmp GetEnemyTypeTimes2PlusFacingDirectionBit0
-CommonJump_InitEnemyData0DAndHealth: ;$8015 (unused?)
-    jmp InitEnemyData0DAndHealth
-CommonJump_InitEnResetAnimIndex: ;$8018 (unused?)
-    jmp InitEnResetAnimIndex
-CommonJump_EnemyFlipAfterDisplacement: ;$801B
-    jmp EnemyFlipAfterDisplacement
-CommonJump_0A: ;$801E
-    jmp LFBCA
-CommonJump_SpawnFireball: ;$8021
-    jmp SpawnFireball
-CommonJump_ChooseRoutine: ;$8024
-    jmp ChooseRoutine               ;($C27C)
-CommonJump_ApplySpeedToPosition: ;$8027
-    jmp ApplySpeedToPosition
-CommonJump_0E: ;$802A
-    jmp LEB6E
-CommonJump_EnemyGetDeltaY: ;$802D
-    jmp EnemyGetDeltaY
-CommonJump_EnemyGetDeltaX: ;$8030
-    jmp EnemyGetDeltaX
-CommonJump_EnemyBGCollideOrApplySpeed: ;$8033
-    jmp EnemyBGCollideOrApplySpeed
-CommonJump_EnemyGetDeltaY_UsingAcceleration: ;$8036
-    jmp EnemyGetDeltaY_UsingAcceleration
-CommonJump_EnemyGetDeltaX_UsingAcceleration: ;$8039
-    jmp EnemyGetDeltaX_UsingAcceleration
-CommonJump_DrawEnemy: ;$803C
-    jmp DrawEnemy
-CommonJump_DrawTileBlast: ;$803F
-    jmp DrawTileBlast
-CommonJump_SubtractHealth: ;$8042
-    jmp SubtractHealth              ;($CE92)
-CommonJump_Base10Subtract: ;$8045
-    jmp Base10Subtract              ;($C3FB)
-
-;-------------------------------------------------------------------------------
 ; A common enemy AI/movement routine
 ; called by F410 in the engine, via CommonJump_00
 CommonEnemyAI:

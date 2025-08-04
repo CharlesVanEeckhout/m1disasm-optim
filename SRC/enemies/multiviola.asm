@@ -3,7 +3,7 @@ MultiviolaAIRoutine:
     cmp #enemyStatus_Active
     bne L9AE0
         ; enemy is active, call CommonJump_0A
-        jsr CommonJump_0A
+        jsr LFBCA
     L9AE0:
     ; change animation frame every 2 frames
     lda #$02

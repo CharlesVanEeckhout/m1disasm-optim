@@ -76,7 +76,7 @@ SwooperAIRoutine01:
 SwooperExit_Resting:
     ; change animation frame every 8 frames for resting swooper
     lda #$08
-    jmp CommonJump_01
+    jmp LF438
 
 
 L9923:
@@ -114,10 +114,10 @@ L9949:
     jsr UpdateSwooperAnim
     ; change animation frame every 3 frames for active swooper
     lda #$03
-    jmp CommonJump_00
+    jmp LF410
 
 SwooperExit_Explode:
-    jmp CommonJump_02
+    jmp LF416
 
 SwooperChangeEnemyType:
     ; set enemy type (either #$00 or #$01)
@@ -128,7 +128,7 @@ SwooperChangeEnemyType:
     pha
     ; initialize new enemy type's properties
     ; this triggers a swoop downwards, either straight down or towards samus
-    jsr CommonJump_0E
+    jsr LEB6E
     ; restore current health
     pla
     sta EnHealth,x

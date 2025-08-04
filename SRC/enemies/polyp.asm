@@ -56,7 +56,7 @@ PolypAIRoutine:
     lda #$02
     sta SpawnFireball_AnimTableIndex
     ; spawn fireball
-    jmp CommonJump_SpawnFireball
+    jmp SpawnFireball
 
 RTS_Polyp:
     rts

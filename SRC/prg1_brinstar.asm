@@ -91,10 +91,8 @@ AreaPointers:
     .byte $60, $EA, $EA
 
 AreaRoutine: ; L95C3
-    jmp AreaRoutineStub ; Just an RTS
+    jmp ExitSub ; Just an RTS
 
-; area init data
-    .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Brinstar            ;Brinstar music init flag.
 AreaEnemyDamage:
@@ -114,7 +112,6 @@ AreaSamusY:
 AreaPalToggle:
     .byte _id_Palette00+1
 
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -131,7 +128,7 @@ AreaMellowAnimIndex:
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
-    jsr CommonJump_ChooseRoutine
+    jsr ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - Sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - Ceiling sidehopper
         .word WaverAIRoutine ; 02 - Waver
@@ -307,8 +304,6 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-; Unused padding to the above?
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
 
 ; enemy accel y table ($972B)
 EnAccelYTable:
@@ -749,14 +744,14 @@ CommonEnemyJump_00_01_02:
     beq @explode
         ; enemy default
         lda $00
-        jmp CommonJump_00
+        jmp LF410
     @resting:
         ; enemy resting
         lda $01
-        jmp CommonJump_01
+        jmp LF438
     @explode:
         ; enemy explode
-        jmp CommonJump_02
+        jmp LF416
 
 .include "enemies/sidehopper.asm"
 
@@ -791,9 +786,6 @@ CommonEnemyJump_00_01_02:
 ; Note: For this bank the functions StorePositionToTemp and LoadPositionFromTemp
 ;  are in are in kraid.asm. Extract those functions from that file if you plan
 ;  on removing it.
-
-AreaRoutineStub: ;L9D35
-    rts
 
 ; Strings pointed to by TileBlastFramePtrTable
 TileBlastFrame00:

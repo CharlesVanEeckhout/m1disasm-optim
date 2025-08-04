@@ -31,7 +31,7 @@ SeahorseAIRoutine:
         sta SpawnFireball_83+1.b
         lda #$03
         sta SpawnFireball_AnimTableIndex
-        jsr CommonJump_SpawnFireball
+        jsr SpawnFireball
         lda NoiseSFXFlag
         ora #sfxNoise_SpitFlame
         sta NoiseSFXFlag
@@ -39,7 +39,7 @@ SeahorseAIRoutine:
         and #$01
         tay
         lda SpawnFireball_83,y
-        jsr CommonJump_InitEnAnimIndex
+        jsr InitEnAnimIndex
         beq L9B59
     L9B3C:
     cmp #$0F
@@ -48,14 +48,14 @@ SeahorseAIRoutine:
     and #$01
     tay
     lda SeahorseTable,y
-    jsr CommonJump_InitEnAnimIndex
+    jsr InitEnAnimIndex
     jmp L9B59
 
 L9B4F:
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     beq L9B59
-    jsr CommonJump_0A
+    jsr LFBCA
 L9B59:
     lda #$01
     sta $00

@@ -62,17 +62,17 @@ KraidLintMain:
     bne KraidLintDraw
 
     ; save deltaY into EnSpeedY
-    jsr CommonJump_EnemyGetDeltaY
+    jsr EnemyGetDeltaY
     ldx PageIndex
     lda $00
     sta EnSpeedY,x
     ; save deltaX into EnSpeedX
-    jsr CommonJump_EnemyGetDeltaX
+    jsr EnemyGetDeltaX
     ldx PageIndex
     lda $00
     sta EnSpeedX,x
     ; check for bg collision and try movement
-    jsr CommonJump_EnemyBGCollideOrApplySpeed
+    jsr EnemyBGCollideOrApplySpeed
     ; exit if movement succeeded
     bcs KraidLintDraw
     ; movement has failed either because lint hit a wall or went out of bounds
@@ -83,8 +83,8 @@ KraidLintMain:
 KraidLintDraw:
     ; draw lint
     lda #$01
-    jsr CommonJump_UpdateEnemyAnim
-    jmp CommonJump_02
+    jsr UpdateEnemyAnim
+    jmp LF416
 
 ;-------------------------------------------------------------------------------
 ; Kraid Projectile 2
@@ -144,7 +144,7 @@ KraidUpdateProjectile_Remove:
     lda #enemyStatus_NoEnemy ; #$00
     sta EnsExtra.0.status,x
     sta EnSpecialAttribs,x
-    jsr CommonJump_0E
+    jsr LEB6E
 
 KraidUpdateProjectile_Resting:
     ; initialize projectile
@@ -193,7 +193,7 @@ KraidUpdateProjectile_Resting:
         tax
     .ENDIF
     ; apply offset to kraid's position
-    jsr CommonJump_ApplySpeedToPosition
+    jsr ApplySpeedToPosition
 
     .IF BANK == 1
         ; load projectile's enemy slot offset into x
