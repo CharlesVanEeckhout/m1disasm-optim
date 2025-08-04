@@ -1038,10 +1038,6 @@ SamusToBallSFXContinue:
         jmp EndTriSFX                  ;($B896)End SFX.
     LB857:
     jsr DivideTriPeriods            ;($B9A0)reduces triangle period low by 20% each frame.
-    lda TriPeriodDividedLow            ;
-    sta TriChangeLow                ;Store new values to change triangle periods.
-    lda TriPeriodDividedHigh           ;
-    sta TriChangeHigh               ;
     jsr DecreaseTriPeriods          ;($B98C)Decrease periods.
 
 WriteTriPeriods:
@@ -1134,10 +1130,6 @@ SamusDieSFXContinue:
         jmp EndTriSFX                   ;($B896)End SFX.
     LB90C:
     jsr DivideTriPeriods            ;($B9A0)reduces triangle period low.
-    lda TriPeriodDividedLow            ;
-    sta TriChangeLow                ;Update triangle periods.
-    lda TriPeriodDividedHigh           ;
-    sta TriChangeHigh               ;
     jsr IncreaseTriPeriods          ;($B978)Increase periods.
     jmp WriteTriPeriods             ;($B869)Save new periods.
 
@@ -1208,21 +1200,21 @@ DecreaseTriPeriods:
 
 ;The following routine takes the triangle period values (TriPeriodLow, TriPeriodHigh) -->
 ;and divides them by TriPeriodDivisor.
-;The routine then stores the result in TriPeriodDividedLow and TriPeriodDividedHigh.
+;The routine then stores the result in TriChangeLow and TriChangeHigh.
 ;This function is basically a software emulation of a sweep function.
 DivideTriPeriods:
     ;Store TriPeriodLow and TriPeriodHigh.
     lda TriPeriodLow
-    pha
+    sta TriChangeLow
     lda TriPeriodHigh
-    pha
+    sta TriChangeHigh
     
     ;Perform division.
     lda #$00
     sta DivideData
     ldx #$10
-    rol TriPeriodLow
-    rol TriPeriodHigh
+    rol TriChangeLow
+    rol TriChangeHigh
     @loop:
         rol DivideData
         lda DivideData
@@ -1231,20 +1223,10 @@ DivideTriPeriods:
             sbc TriPeriodDivisor
             sta DivideData
         @endIf_A:
-        rol TriPeriodLow
-        rol TriPeriodHigh
+        rol TriChangeLow
+        rol TriChangeHigh
         dex
         bne @loop
-    lda TriPeriodLow
-    sta TriPeriodDividedLow
-    lda TriPeriodHigh
-    sta TriPeriodDividedHigh
-    
-    ;Restore TriPeriodLow and TriPeriodHigh.
-    pla
-    sta TriPeriodHigh
-    pla
-    sta TriPeriodLow
     rts
 
 ;--------------------------------------[ End SFX routines ]-------------------------------------

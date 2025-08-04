@@ -761,8 +761,6 @@ TriPeriodHigh          = $0611   ;Stroes triangle SFX period high for processing
 TriChangeLow           = $0612   ;Stores triangle SFX change in period low
 TriChangeHigh          = $0613   ;Stores triangle SFX change in period high
 
-TriPeriodDividedLow    = $0614   ;Low result of DivideTriPeriods division. Used as TriChangeLow.
-TriPeriodDividedHigh   = $0615   ;High result of DivideTriPeriods division. Used as TriChangeHigh.
 TriPeriodDivisor       = $0616   ;Used in DivideTriPeriods as divisor for TriPeriod values.
 DivideData             = $0617   ;Used in DivideTriPeriods
 
