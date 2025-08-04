@@ -7843,8 +7843,12 @@ LE95F:
 
 MakeCartRAMPtr:
     ;Set pointer to $6xxx(cart RAM).
-    lda #RoomRAMA >> 10.b
+    ;Object nametable.
+    lda Temp0B_PositionHi
+    and #$01
+    ora #RoomRAMA >> 10.b
     sta Temp04_CartRAMPtr+1.b
+    
     ;Object Y room position.
     lda Temp02_PositionY
     ;Drop 3 LSBs. Only use multiples of 8.
@@ -7854,8 +7858,10 @@ MakeCartRAMPtr:
     rol Temp04_CartRAMPtr+1.b
     asl
     rol Temp04_CartRAMPtr+1.b
+    
     ;move bits 3, 4, 5 to upper 3 bits of $04.
     sta Temp04_CartRAMPtr
+    
     ;Object X room position.
     lda Temp03_PositionX
     ;A=ObjX/8.
@@ -7865,17 +7871,6 @@ MakeCartRAMPtr:
     ;Put bits 0 thru 4 into $04.
     ora Temp04_CartRAMPtr
     sta Temp04_CartRAMPtr
-    ;Object nametable.
-    lda Temp0B_PositionHi
-    ; A=ObjHi*4.
-    asl
-    asl
-    ;Set bit 2 if object is on nametable 3.
-    and #$04
-    ;Include nametable bit in $05.
-    ora Temp04_CartRAMPtr+1.b
-    sta Temp04_CartRAMPtr+1.b
-    ;Return pointer in $04 = 01100HYY YYYXXXXX.
     rts
 
 ;---------------------------------------------------------------------------------------------------

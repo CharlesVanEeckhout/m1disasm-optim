@@ -101,8 +101,6 @@ GotoUpdateBullet_CollisionWithMotherBrain:
 AreaRoutine:
     jmp AreaRoutine_Tourian                       ;Area specific routine.
 
-L95CC:
-    .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Tourian             ;Tourian music init flag.
 AreaEnemyDamage:

@@ -94,8 +94,6 @@ AreaPointers:
 AreaRoutine:
     jmp ExitSub                       ;Area specific routine.
 
-L95CC:
-    .byte $12                       ;Ridley's room.
 AreaMusicFlag:
     .byte music_RidleyArea          ;Ridley hideout music init flag.
 AreaEnemyDamage:

@@ -95,8 +95,6 @@ AreaPointers:
 AreaRoutine:
     jmp ExitSub ; Just an RTS
 
-L95CC:
-    .byte $1D                       ;Kraid's room.
 AreaMusicFlag:
     .byte music_KraidArea           ;Kraid's hideout music init flag.
 AreaEnemyDamage:
