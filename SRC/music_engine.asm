@@ -1242,23 +1242,27 @@ SetVolumeAndDisableSweep:
     rts
 
 LoadSQ1SQ2Periods:
-    lda WriteMultiChannelData       ;If a Multi channel data does not need to be-->
-    beq RTS_BA36                       ;loaded, branch to exit.
-    lda #$00                        ;
-    sta WriteMultiChannelData       ;Clear multi channel data write flag.
-    lda MusicSQ1Sweep               ;
-    sta SQ1_SWEEP                   ;
-    lda MusicSQ1PeriodLow           ;
-    sta SQ1_LO                      ;Loads SQ1 channel addresses $4001, $4002, $4003.
-    lda MusicSQ1PeriodHigh          ;
-    sta SQ1_HI                      ;
-    lda MusicSQ2Sweep               ;
-    sta SQ2_SWEEP                   ;
-    lda MusicSQ2PeriodLow           ;
-    sta SQ2_LO                      ;Loads SQ2 channel addresses $4005, $4006, $4007.
-    lda MusicSQ2PeriodHigh          ;
-    sta SQ2_HI                      ;
-RTS_BA36:
+    ;If a Multi channel data does not need to be loaded, branch to exit.
+    lda WriteMultiChannelData
+    beq @RTS
+    ;Clear multi channel data write flag.
+    lda #$00
+    sta WriteMultiChannelData
+    ;Loads SQ1 channel addresses $4001, $4002, $4003.
+    lda MusicSQ1Sweep
+    sta SQ1_SWEEP
+    lda MusicSQ1PeriodLow
+    sta SQ1_LO
+    lda MusicSQ1PeriodHigh
+    sta SQ1_HI
+    ;Loads SQ2 channel addresses $4005, $4006, $4007.
+    lda MusicSQ2Sweep
+    sta SQ2_SWEEP
+    lda MusicSQ2PeriodLow
+    sta SQ2_LO
+    lda MusicSQ2PeriodHigh
+    sta SQ2_HI
+@RTS:
     rts
 
 LoadSQ1SQ2Channels:
@@ -1281,16 +1285,16 @@ WriteSQCntrl0:
     
     ; Store (VolumeEnvelopeIndex-1)*2 into y
     ldy #$00
-    LBA54:
+    @loop:
         ;Desired entry in VolumeEnvelopePtrTable.
         dec VolumeEnvelopeIndex
-        beq LBA5C
+        beq @exitLoop
         ;*2(2 byte address to find volume control data).
         iny
         iny
         ;Keep decrementing until desired address is found.
-        bne LBA54
-LBA5C:
+        bne @loop
+@exitLoop:
     ;Load volume data address into VolumeEnvelopePtr
     lda VolumeEnvelopePtrTable,y
     sta VolumeEnvelopePtr
@@ -1352,16 +1356,18 @@ LBA99:
 
 LoadCurrentMusicFrameData:
     ;($B9F3)Reset index if at the beginning of a new note.
-    lda SQ1MusicFrameCount          ;If at the beginning of a new SQ1 note, set-->
-    cmp #$01                        ;SQ1VolumeIndex = #$01.
-    bne LB9FD                       ;
-        sta SQ1VolumeIndex              ;
-    LB9FD:
-    lda SQ2MusicFrameCount          ;
-    cmp #$01                        ;If at the beginning of a new SQ2 note, set-->
-    bne LBA07                       ;SQ2VolumeIndex = #$01.
-        sta SQ2VolumeIndex              ;
-    LBA07:
+    ;If at the beginning of a new SQ1 note, set SQ1VolumeIndex = #$01.
+    lda SQ1MusicFrameCount
+    cmp #$01
+    bne @endIf_A
+        sta SQ1VolumeIndex
+    @endIf_A:
+    ;If at the beginning of a new SQ2 note, set SQ2VolumeIndex = #$01.
+    lda SQ2MusicFrameCount
+    cmp #$01
+    bne @endIf_B
+        sta SQ2VolumeIndex
+    @endIf_B:
     lda #$00                        ;
     tax                             ;X = #$00.
     sta ThisSoundChannel            ;(#$00, #$04, #$08 or #$0C).
