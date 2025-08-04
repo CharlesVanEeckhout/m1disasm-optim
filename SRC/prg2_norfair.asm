@@ -135,19 +135,19 @@ ChooseEnemyAIRoutine:
         .word SwooperAIRoutine00 ; 00 - swooper has not seen samus
         .word SwooperAIRoutine01 ; 01 - swooper targetting samus
         .word RipperAIRoutine ; 02 - ripper II
-        .word RemoveEnemy_ ; 03 - disappears
-        .word RemoveEnemy_ ; 04 - same as 3
-        .word RemoveEnemy_ ; 05 - same as 3
+        .word RemoveEnemy ; 03 - disappears
+        .word RemoveEnemy ; 04 - same as 3
+        .word RemoveEnemy ; 05 - same as 3
         .word CrawlerAIRoutine ; 06 - crawler
         .word PipeBugAIRoutine ; 07 - gamet
-        .word RemoveEnemy_ ; 08 - same as 3
-        .word RemoveEnemy_ ; 09 - same as 3
-        .word RemoveEnemy_ ; 0A - same as 3
+        .word RemoveEnemy ; 08 - same as 3
+        .word RemoveEnemy ; 09 - same as 3
+        .word RemoveEnemy ; 0A - same as 3
         .word SqueeptAIRoutine ; 0B - lava jumper
         .word MultiviolaAIRoutine ; 0C - bouncy orb
         .word SeahorseAIRoutine ; 0D - seahorse
         .word PolypAIRoutine ; 0E - rock launcher thing
-        .word RemoveEnemy_ ; 0F - same as 3
+        .word RemoveEnemy ; 0F - same as 3
 
 EnemyDeathAnimIndex:
     .byte EnAnim_GerutaExplode - EnAnimTbl, EnAnim_GerutaExplode - EnAnimTbl
@@ -463,10 +463,6 @@ EnemyFireballMovement3:
     .byte $FF
 
 ;-------------------------------------------------------------------------------
-RemoveEnemy_:
-    lda #$00
-    sta EnsExtra.0.status,x
-    rts
 
 CommonEnemyJump_00_01_02:
     lda EnemyStatusPreAI
