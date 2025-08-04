@@ -34,6 +34,10 @@ GFX_RidleySprites:
 
 ;----------------------------------------------------------------------------------------------------
 
+.ends
+
+.section "ROM Bank $003 - Palette" bank 3 slot "ROMSwitchSlot" orga $9560 force
+
 PalPntrTbl:
     PtrTableEntry PalPntrTbl, Palette00                 ;($A718)Room palette.
     PtrTableEntry PalPntrTbl, Palette01                 ;($A73C)Samus power suit palette.
@@ -1142,9 +1146,6 @@ Xplus16:
     tax
     rts
 
-    ; unused
-    rts
-
 L9F00: .byte _id_Palette08+1, _id_Palette09+1
 
 ;-------------------------------------------------------------------------------
@@ -2087,19 +2088,6 @@ TileBlastFrame10:
     .include "songs/pal/mthr_brn_room.asm"
 .endif
 
-;Unused tile patterns.
-.if BUILDTARGET == "NES_NTSC"
-    .byte $2B, $3B, $1B, $5A, $D0, $D1, $C3, $C3, $3B, $3B, $9B, $DA, $D0, $D0, $C0, $C0
-    .byte $2C, $23, $20, $20, $30, $98, $CF, $C7, $00, $00, $00, $00, $00, $00, $00, $30
-    .byte $1F, $80, $C0, $C0, $60, $70, $FC, $C0, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $01, $00, $00, $00, $00, $00, $00, $00, $80, $80, $C0, $78, $4C, $C7, $80, $80
-    .byte $C4, $A5, $45, $0B, $1B, $03, $03, $00, $3A, $13, $31, $63, $C3, $83, $03, $04
-    .byte $E6, $E6, $C4, $8E, $1C, $3C, $18, $30, $E8, $E8, $C8, $90, $60, $00, $00, $00
-.elif BUILDTARGET == "NES_PAL"
-    .byte $CA, $F0, $05, $4A, $4A
-.endif
-
-
 .ends
 
 ;------------------------------------------[ Sound Engine ]------------------------------------------
@@ -2112,18 +2100,13 @@ TileBlastFrame10:
 
 .include "music_engine.asm"
 
-;----------------------------------------------[ RESET ]--------------------------------------------
-
-ROMSWITCH_RESET:
-.include "reset.asm"
-
 .ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
 .section "ROM Bank $003 - Vectors" bank 3 slot "ROMSwitchSlot" orga $BFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word ROMSWITCH_RESET           ;($BFB0)Reset vector.
-    .word ROMSWITCH_RESET           ;($BFB0)IRQ vector.
+    .word NMI              ;($C0D9)NMI vector.
+    .word RESET            ;($FFB0)Reset vector.
+    .word RESET            ;($FFB0)IRQ vector.
 .ends
 

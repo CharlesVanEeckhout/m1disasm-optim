@@ -268,11 +268,7 @@ NMI:
         jsr ReadJoyPads
     LC103:
     ;($B3B4)Update music and SFX.
-    .if BUILDTARGET == "NES_NTSC"
-        jsr SoundEngine
-    .elif BUILDTARGET == "NES_PAL"
-        jsr GotoSoundEngine
-    .endif
+    jsr SoundEngine
     ;($C97E)Update Samus' age.
     jsr UpdateAge
     ; NMI = finished.
@@ -727,8 +723,7 @@ Adiv32:
     lsr                             ;Divide by 32.
 Adiv16:
     lsr                             ;Divide by 16.
-Adiv8:
-    lsr                             ;Divide by 8.
+    lsr                             ;
     lsr                             ;
     lsr                             ;Divide by shifting A right.
     rts
@@ -1122,8 +1117,6 @@ SetTimer:
 
 PrepVertMirror: ;($C4B2)
     ;Prepare to set PPU for vertical mirroring (again).
-    nop
-    nop
     lda #$47
 
 SetPPUMirror:
@@ -2118,160 +2111,6 @@ BankTable:
     .byte $03+1                       ;Tourian.
     .byte $05+1                       ;Ridley hideout.
 
-;----------------------------------[ Saved game routines (not used) ]--------------------------------
-
-AccessSavedGame:
-    pha                             ;Save two copies of A. Why? Who knows. This code is-->
-    pha                             ;Never implemented. A contains data slot to work on.
-    jsr GetGameDataIndex            ;($CA96)Get index to this save game Samus data info.
-    lda EraseGame                   ;
-    bpl LCA4C                           ;Is MSB set? If so, erase saved game data. Else branch.
-        and #$01                        ;
-        sta EraseGame                   ;Clear MSB so saved game data is not erased again.
-        jsr EraseAllGameData            ;($CAA1)Erase selected saved game data.
-        lda #$01                        ;Indicate this saved game has been erased.-->
-        sta SamusData02,y                     ;Saved game 0=$780C, saved game 1=$781C, saved game 2=$782C.
-    LCA4C:
-    ;If initializing the area at the start of the game, branch to load Samus' saved game info.
-    lda MainRoutine
-    cmp #_id_MoreInit.b
-    beq LoadGameData
-
-SaveGameData:
-    ;Save game based on current area Samus is in. Don't know why.
-    lda InArea
-    jsr SavedDataBaseAddr           ;($CAC6)Find index to unique item history for this saved game.
-    ;Prepare to save unique item history which is 64 bytes in length.
-    ldy #$3F
-    LCA59:
-        ;Save unique item history in appropriate saved game slot.
-        lda NumberOfUniqueItems,y
-        sta ($00),y
-        dey
-        ;Loop until unique item history transfer complete.
-        bpl LCA59
-    ;Prepare to save Samus' data.
-    ldy SamusDataIndex
-    ldx #$00
-    LCA66:
-        ;Save Samus' data in appropriate saved game slot.
-        lda SamusStat00,x
-        sta SamusData00,y
-        iny
-        inx
-        cpx #$10
-        ;Loop until Samus' data transfer complete.
-        bne LCA66
-    ;fallthrough
-
-LoadGameData:
-    ;Restore A to find appropriate saved game to load.
-    pla
-    jsr SavedDataBaseAddr           ;($CAC6)Find index to unique item history for this saved game.
-    ;Prepare to load unique item history which is 64 bytes in length.
-    ldy #$3F
-    LCA78:
-        ;Loop until unique item history is loaded.
-        lda ($00),y
-        sta NumberOfUniqueItems,y
-        dey
-        bpl LCA78
-    ;Branch always.
-    bmi LCA83
-        pha ; unused instruction
-    LCA83:
-    ;Prepare to load Samus' data.
-    ldy SamusDataIndex
-    ldx #$00
-    LCA88:
-        ;Load Samus' data from appropriate saved game slot.
-        lda SamusData00,y
-        sta SamusStat00,x
-        iny
-        inx
-        cpx #$10
-        ;Loop until Samus' data transfer complete.
-        bne LCA88
-    pla
-    rts
-
-GetGameDataIndex:
-    ;A contains the save game slot to work on (0, 1 or 2).-->
-    ;This number is transferred to the upper four bits to-->
-    ;find the offset for Samus' data for this particular-->
-    ;saved game (#$00, #$10 or #$20).
-    lda DataSlot
-    asl
-    asl
-    asl
-    asl
-    sta SamusDataIndex
-    rts
-
-EraseAllGameData:
-    lda #$00                        ;Always start at saved game 0. Erase all 3 saved games.
-    jsr SavedDataBaseAddr           ;($CAC6)Find index to unique item history for this saved game.
-    inc $03                         ;Prepare to erase saved game info at $6A00 and above.
-    ldy #$00                        ;Fill saved game data with #$00.
-    tya                             ;
-    LCAAB:
-        sta ($00),y                     ;Erase unique item histories from $69B4 to $69FF.
-        cpy #$40                        ;
-        bcs LCAB3                           ;IF 64 bytes alrady erased, no need to erase any more-->
-            sta ($02),y                     ;in the $6A00 and above range.
-        LCAB3:
-        iny                             ;
-        bne LCAAB                       ;Loop until all saved game data is erased.
-    ldy SamusDataIndex              ;Load proper index to desired Samus data to erase.
-    ldx #$00                        ;
-    txa                             ;
-    LCABC:
-        sta SamusData00,y               ;Erase Samus' data.
-        iny                             ;
-        inx                             ;
-        cpx #$0C                        ;
-        bne LCABC                       ;Loop until all data is erased.
-    rts
-
-;This routine finds the base address of the unique item history for the desired saved game (0, 1 or 2).
-;The memory set aside for each unique item history is 64 bytes and occupies memory addresses $69B4 thru
-;$6A73.
-
-SavedDataBaseAddr:
-    pha                             ;Save contents of A.
-    lda DataSlot                    ;Load saved game data slot to load.
-    asl                             ;*2. Table values below are two bytes.
-    tax                             ;
-    lda SavedDataTable,x            ;
-    sta $00                         ;Load $0000 and $0002 with base addresses from-->
-    sta $02                         ;table below($69B4).
-    lda SavedDataTable+1,x          ;
-    sta $01                         ;
-    sta $03                         ;
-    pla                             ;Restore A.
-    and #$0F                        ;Discard upper four bits in A.
-    tax                             ;X used for counting loop.
-    beq RTS_CAEE                       ;Exit if at saved game 0.  No further calculations required.
-    LCAE0:
-        lda $00                         ;
-        clc                             ;
-        adc #$40                        ;
-        sta $00                         ;Loop to add #$40 to base address of $69B4 in order to find-->
-        bcc LCAEB                           ;the proper base address for this saved game data. (save-->
-            inc $01                         ;slot 0 = $69B4, save slot 1 = $69F4, save slot 2 = $6A34).
-        LCAEB:
-        dex
-        bne LCAE0
-RTS_CAEE:
-    rts
-
-;Table used by above subroutine to find base address to load saved game data from. The slot 0
-;starts at $69B4, slot 1 starts at $69F4 and slot 2 starts at $6A34.
-
-SavedDataTable:
-    .word ItemHistory               ;($69B4)Base for save game slot 0.
-    .word ItemHistory               ;($69B4)Base for save game slot 1.
-    .word ItemHistory               ;($69B4)Base for save game slot 2.
 
 ;----------------------------------------[ Choose ending ]-------------------------------------------
 
@@ -6561,7 +6400,9 @@ DoOneDoorScroll:
     lda #$20                        ;Set DoorDelay to 32 frames(comming out of door).
     sta DoorDelay                   ;
     lda SamusDoorData               ;Check if scrolling should be toggled.
-    jsr Amul8                       ;($C2C6)*8. Is door not to toggle scrolling(item room,-->
+    asl
+    asl
+    asl                       ;($C2C6)*8. Is door not to toggle scrolling(item room,-->
     bcs LE23D                           ;bridge room, etc.)? If so, branch to NOT toggle scrolling.
         ldy DoorScrollStatus            ;If coming from vertical shaft, skip ToggleScroll because-->
         cpy #$03                        ;the scroll was already toggled after room was centered-->
@@ -7521,7 +7362,9 @@ EndOfRoomHorizontal:
     ; $01.00 = (ScrollX & 0xF8) / 8 = tile index
     lda ScrollX
     and #$F8        ; keep upper five bits (redundant)
-    jsr Adiv8       ; / 8 (make 'em lower five)
+    lsr
+    lsr
+    lsr       ; / 8 (make 'em lower five)
     sta $00
     lda #$00
     jmp UpdateNameTable
@@ -7736,7 +7579,9 @@ ProjectileHitDoorOrStatue:
         bne @next
         ; get obj slot
         txa
-        jsr Amul8       ; * 8
+        asl
+        asl
+        asl       ; * 8
         ora #$80
         tay
         ; check next door if it doesn't exist
@@ -7776,7 +7621,9 @@ ProjectileHitDoorOrStatue:
     ; lowest nybble of pointer to ridley statue is #$C or #$D
     ; therefore, by using bit 3 of the pointer, we can distinguish between the statues
     lda Temp04_CartRAMPtr
-    jsr Adiv8       ; / 8
+    lsr
+    lsr
+    lsr       ; / 8
     and #$01
     ; set statue is hit flag for appropriate statue
     tax
@@ -12226,7 +12073,9 @@ GetPosAtNameTableAddr:
     ror $02
     tya
     and #%00011111
-    jsr Amul8       ; * 8
+    asl
+    asl
+    asl       ; * 8
     sta $03
     rts
 
@@ -12289,7 +12138,6 @@ TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
 
 ;-----------------------------------------------[ RESET ]--------------------------------------------
 
-ROMFIXED_RESET:
 .include "reset.asm"
 
 .ends
@@ -12297,8 +12145,8 @@ ROMFIXED_RESET:
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
 .section "ROM Bank $007 - Vectors" bank 7 slot "ROMFixedSlot" orga $FFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word ROMFIXED_RESET            ;($FFB0)Reset vector.
-    .word ROMFIXED_RESET            ;($FFB0)IRQ vector.
+    .word NMI              ;($C0D9)NMI vector.
+    .word RESET            ;($FFB0)Reset vector.
+    .word RESET            ;($FFB0)IRQ vector.
 .ends
 

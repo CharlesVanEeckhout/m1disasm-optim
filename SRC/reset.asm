@@ -47,31 +47,3 @@ RESET: ;($BFB0)
     jmp Startup
 
 
-;Not used.
-.if BUILDTARGET == "NES_NTSC"
-    .if BANK == 7
-        .byte $FF, $FF, $FF, $4C, $E4, $B3, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-        .byte $FF, $FF, $FF, $FF, $4D, $45, $54, $52, $4F, $49, $44, $E4, $8D, $00, $00, $38
-        .byte $04, $01, $06, $01, $BC
-    .else
-        .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00
-        .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-        .byte $00, $00, $00, $00, $00
-    .endif
-.elif BUILDTARGET == "NES_PAL"
-    .if BANK == 7
-        .byte $00, $FF, $00
-        
-        GotoSoundEngine:
-            jmp SoundEngine
-         
-        .byte $00, $FF, $00, $FF, $00, $FF, $FF, $FF, $FF, $FF
-        .byte $FF, $FF, $FF, $FF, $4D, $45, $54, $52, $4F, $49, $44, $00, $00, $00, $00, $38
-        .byte $04, $01, $06, $01, $BC
-    .else
-        .byte $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF
-        .byte $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF, $00, $FF
-        .byte $00, $FF, $00, $FF, $00
-    .endif
-.endif
-

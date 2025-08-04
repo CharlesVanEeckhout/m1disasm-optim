@@ -668,11 +668,6 @@ PPUString_DrawIntroBackground:
 
     PPUStringEnd
 
-;The following data does not appear to be used.
-    .byte $46, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $20, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 ;The following error message is diplayed if the player enters an incorrect password.
 L8759:
@@ -683,11 +678,6 @@ L8759:
 L8768:
     .stringmap charmap, "               "
 
-;Not used.
-    .byte $79, $87, $00, $00, $00, $00, $00, $00, $01, $00, $00, $00, $00, $00, $02, $00
-    .byte $00, $03, $00, $00, $00, $00, $00, $00, $01, $00, $00, $00, $00, $00, $02, $00
-    .byte $00, $03, $A1, $87, $A2, $87, $A5, $87, $A8, $87, $00, $18, $CC, $00, $18, $CD
-    .byte $00, $18, $CE, $00
 
 LoadSparkleData:
     ldx #$0A
@@ -773,7 +763,9 @@ RTS_8819:
 
 DoSparkleSpriteCoord:
     txa                             ;
-    jsr Adiv8                       ;($C2C0)Y=0 when working with top sparkle sprite-->
+    lsr
+    lsr
+    lsr                       ;Y=0 when working with top sparkle sprite-->
     tay                             ;and y=2 when working with bottom sparkle sprite.
     lda SparkleAddressTbl,y         ;Base is $89AF.
     sta $00                         ;When working with top sparkle sprite, E1,E0=$89B3-->
@@ -1396,9 +1388,13 @@ UniqueItemSearch: ;($8B9C)
 
 UniqueItemFound:
     txa                             ;
-    jsr Adiv8                       ;($C2C0)Divide by 8.
+    lsr
+    lsr
+    lsr                       ;($C2C0)Divide by 8.
     sta $05                         ;Shifts 5 MSBs to LSBs of item # and saves results in $05.
-    jsr Amul8                       ;($C2C6)Multiply by 8.
+    asl
+    asl
+    asl                       ;($C2C6)Multiply by 8.
     sta $02                         ;Restores 5 MSBs of item # and drops 3 LSBs; saves in $02.
     txa                             ;
     sec                             ;
@@ -1476,7 +1472,9 @@ RTS_8C38:
 
 SamusHasItem:
     lda $05                         ;$05 becomes the upper part of the item offset-->
-    jsr Amul8                       ;while $06 becomes the lower part of the item offset.
+    asl
+    asl
+    asl                       ;while $06 becomes the lower part of the item offset.
     clc                             ;
     adc $06                         ;
     asl                             ;* 2. Each item is two bytes in length.
@@ -2634,212 +2632,15 @@ PrepareEraseTiles:
     sty $03
     jmp WriteTileBlast              ;($C328)Erase the selected tiles.
 
-;---------------------------------------[ Unused intro routines ]------------------------------------
-
-;The following routines are intro routines that are not used in this version of the game.  It
-;appears that the intro routine was originally going to be more complex with a more advanced
-;sprite control mechanism and name table writing routines. The intro routines are a mess! In
-;addition to unused routines, there are several unused memory addresses that are written to but
-;never read.
-
-;The following unused routine writes something to the-->
-;PPU string and prepares for a PPU write.
-UnusedIntroRoutine4:
-    stx PPUStrIndex
-    lda #$00
-    sta PPUDataString,x
-    lda #$01
-    sta PPUDataPending
-    rts
-
-
-;Unused intro routine. It looks like originally the-->
-;title routines were going to write data to the name-->
-;tables in the middle of the title sequences.
-UnusedIntroRoutine5:
-    ; run subroutine for high nybble
-    sta $05
-    and #$F0
-    lsr
-    lsr
-    lsr
-    lsr
-    jsr @subroutine
-    ; run subroutine for low nybble
-    lda $05
-    and #$0F
-    ; fallthrough
-    
-@subroutine:
-    ; store nybble to current location in PPUDataString buffer
-    sta PPUDataString,x
-    ; move to next byte in buffer
-    inx
-    ; exit if we haven't moved outside the bounds of the buffer
-    txa
-    cmp #$55
-    bcc @RTS
-
-    ; oh no. we are out of bounds
-    ; cancel writing the current ppu string to the buffer
-    ldx PPUStrIndex
-    @loop_infinite:
-        ; cancel repeatedly forever
-        ; pretty sure this is a bug
-        lda #$00 
-        sta PPUDataString,x
-        beq @loop_infinite
-@RTS:
-    rts
-
-;Another unused intro routine.
-UnusedIntroRoutine6:
-    ; push y
-    tya
-    pha
-    
-    ; y = y*16
-    jsr Amul16
-    tay
-    ; load hex number into $0A-$0B
-    lda UnusedIntro684A+1,y
-    sta $0B
-    lda UnusedIntro684A,y
-    sta $0A
-    ; transform into BCD
-    jsr UnusedIntroRoutine8
-    ; save BCD to UnusedIntro683C
-    lda $06
-    sta UnusedIntro683C+1,x
-    lda $07
-    sta UnusedIntro683C,x
-    
-    ; pop y
-    pla
-    tay
-    rts
-
-;Another unused intro routine.
-UnusedIntroRoutine7:
-    ; push y
-    tya
-    pha
-    
-    ; y = y*16
-    jsr Amul16
-    tay
-    ; load hex number into $0A-$0B
-    lda UnusedIntro684C+1,y
-    sta $0B
-    lda UnusedIntro684C,y
-    sta $0A
-    ; transform into BCD
-    jsr UnusedIntroRoutine8
-    ; save BCD to UnusedIntro6833
-    lda $06
-    sta UnusedIntro6833+1,x
-    lda $07
-    sta UnusedIntro6833,x
-    
-    ; push UnusedIntro6842,y to stack
-    lda UnusedIntro6842,y
-    pha
-    ; y = x*2
-    txa
-    lsr
-    tay
-    ; save pushed value
-    pla
-    sta UnusedIntro6839,y
-    
-    ; pop y
-    pla
-    tay
-    rts
-
-;Unused intro routine. A 16-bit version of HexToDec.
-;Convert 16-bit value in $0A-$0B to 4 decimal digits.
-;Stored as a 16-bit BCD value in $06-$07.
-UnusedIntroRoutine8: ;($94DA)
-    lda #$FF
-    sta $01
-    sta $02
-    sta $03
-    sec
-    @loop_A:
-        ; subtract 1000 from $0A-$0B
-        lda $0A
-        sbc #$E8
-        sta $0A
-        lda $0B
-        sbc #$03
-        sta $0B
-        ; increment the thousands digit
-        inc $03
-        bcs @loop_A
-    ; undo the last subtraction
-    lda $0A
-    adc #$E8
-    sta $0A
-    lda $0B
-    adc #$03
-    sta $0B
-    ; hundreds
-    lda $0A
-    @loop_B:
-        sec
-        @loop_C:
-            sbc #$64
-            inc $02
-            bcs @loop_C
-        dec $0B
-        bpl @loop_B
-    ; undo the last subtraction
-    adc #$64
-    ; tens
-    sec
-    @loop_D:
-        sbc #$0A
-        inc $01
-        bcs @loop_D
-    ; undo the last subtraction
-    adc #$0A
-    
-    ; all digits have now been isolated:
-    ; thousands in $03, hundreds in $02, tens in $01, ones in a
-    
-    ; store ones in $06
-    sta $06
-    ; add tens multiplied by 16 to $06
-    lda $01
-    jsr Amul16
-    ora $06
-    sta $06
-    ; store thousands multiplied by 16 + hundreds in $07
-    lda $03
-    jsr Amul16
-    ora $02
-    sta $07
-    rts
-
-;Not used.
-.if BUILDTARGET == "NES_NTSC"
-    .byte $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00
-.elif BUILDTARGET == "NES_PAL"
-    .byte $63, $D6, $88, $D0, $3A, $A9, $00, $9D, $D0, $05, $A5, $03, $18, $69, $09, $48
-    .byte $A5, $04, $29, $02, $F0, $05, $68, $18, $69, $05, $48, $68, $9D, $C0, $05, $A5
-    .byte $02, $18, $69, $08, $9D, $B0, $05, $A9, $22, $9D, $E0, $05, $A9, $08, $85, $4A
-    .byte $C6, $50, $20, $6E
-.endif
-
 
 ;--------------------------------------[ Palette data ]---------------------------------------------
 
 ;The following table points to the palette data
 ;used in the intro and ending portions of the game.
+
+.ends
+
+.section "ROM Bank $000 - Palette" bank 0 slot "ROMSwitchSlot" orga $9560 force
 
 bank0_PalPntrTbl:
     .word bank0_Palette00                 ;($9586)
@@ -3118,11 +2919,6 @@ IntroStarsData:
     .byte $87, $CD, $63, $5D
     .byte $5A, $CE, $62, $4F
     .byte $38, $CF, $23, $85
-
-;Not used.
-    .byte $3F, $00, $20, $02, $20, $1B, $3A, $02, $20, $21, $01, $02, $2C, $30, $27, $02
-    .byte $26, $31, $17, $02, $16, $19, $27, $02, $16, $20, $27, $02, $16, $20, $11, $02
-    .byte $01, $20, $21, $00
 
 L9984:
     PPUString $218C, \
@@ -3560,10 +3356,10 @@ RTS_9C44:
 LoadCredits:
     ;If credits are not being displayed, exit.
     ldy CreditPageNumber
-    beq @RET
+    beq @RTS
     ;If CreditPageNumber is higher than #$06, exit.
     cpy #$07
-    bcs @RET
+    bcs @RTS
     ;If ScrollY is less than #$80 (128), branch.
     ldx #$00
     lda ScrollY
@@ -3575,7 +3371,7 @@ LoadCredits:
     @endIf_A:
     ;If (ScrollY & #$7F) is greater or equal to #$04, branch to exit.
     cmp #$04
-    bcs @RET
+    bcs @RTS
     ;Store #$00, #$01, #$02 or #$03 in address $01.
     sta $01
     ;Y now contains CreditPageNumber - 1.
@@ -3586,7 +3382,7 @@ LoadCredits:
         ;Y now contains CreditPageNumber - 2.
         dey
         ;If on Credit page less than two, branch to exit.
-        bmi @RET
+        bmi @RTS
         ;Start with ((CreditPageNumber - 2) * 8 + 4 + $01) * 2.
         ;Equivalent to CreditPageNumber * 16 - 22
         ;This formula is used when ScrollY = 0, 1, 2 and 3.
@@ -3614,7 +3410,7 @@ LoadCredits:
     lda CreditsPointerTbl+1,y       ;Upper byte of pointer to PPU string.
     tay
     jmp PreparePPUProcess          ;($C20E)Prepare to write to PPU.
-@RET:
+@RTS:
     rts
 
 LoadWaveSprites:
@@ -4614,95 +4410,6 @@ CopyMap:
         bne LA950
     rts
 
-;Unused tile patterns.
-.if BUILDTARGET == "NES_NTSC"
-    .byte $00, $40, $90, $D0, $08, $5C, $0C, $00, $00, $C0, $70, $F8, $FC, $F4, $FC, $10
-    .byte $22, $56, $03, $2B, $74, $37, $0D, $3F, $5F, $7D, $7F, $7F, $5F, $3F, $0F, $68
-    .byte $F6, $BC, $5E, $3C, $DE, $7C, $F0, $FC, $DE, $FE, $FE, $FE, $FE, $FC, $F0, $00
-    .byte $00, $7F, $80, $80, $FF, $7F, $00, $00, $7F, $80, $7F, $FF, $FF, $7F, $00, $00
-    .byte $00, $FC, $01, $03, $FF, $FE, $00, $00, $FE, $03, $FF, $FF, $FF, $FE, $00, $00
-    .byte $10, $20, $20, $00, $20, $00, $00, $3C, $42, $81, $81, $81, $81, $42, $3C, $7F
-    .byte $7F, $3F, $1F, $80, $0F, $08, $88, $12, $80, $C0, $E0, $E0, $EF, $E8, $E8, $FC
-    .byte $FC, $FC, $F8, $1C, $DC, $58, $5C, $48, $04, $0C, $18, $1C, $DC, $18, $1C, $0F
-    .byte $00, $9F, $3F, $7F, $DB, $00, $00, $E0, $E0, $FF, $FF, $FF, $DB, $00, $00, $DC
-    .byte $18, $EC, $F4, $F8, $6C, $00, $00, $1C, $18, $FC, $FC, $FC, $6C, $00, $00, $FF
-    .byte $FF, $C0, $C0, $CF, $CB, $CC, $CC, $00, $00, $1F, $3F, $3F, $38, $3B, $3B, $FC
-    .byte $FC, $0C, $0C, $CC, $4C, $CC, $CC, $00, $04, $EC, $FC, $FC, $3C, $BC, $BC, $CB
-    .byte $CF, $C0, $C0, $FF, $FF, $00, $00, $3B, $30, $3F, $1F, $7F, $FF, $00, $00, $4C
-    .byte $CC, $0C, $0C, $FC, $FC, $00, $00, $3C, $3C, $FC, $EC, $FC, $FC, $00, $00, $FE
-    .byte $82, $82, $82, $82, $FE, $00, $00, $00, $7E, $56, $56, $7E, $FE, $00, $00, $20
-    .byte $00, $00, $18, $20, $00, $00, $18, $1C, $F7, $3C, $18, $1C, $F7, $3C, $18, $E2
-    .byte $80, $10, $20, $00, $00, $80, $00, $E2, $98, $2C, $5E, $7E, $3C, $98, $00, $7E
-    .byte $00, $7E, $00, $7E, $00, $7E, $00, $6E, $00, $6E, $00, $6E, $00, $6E, $00, $10
-    .byte $F4, $08, $04, $C5, $24, $23, $05, $E8, $F8, $0E, $E6, $F7, $37, $2E, $FD, $00
-    .byte $5F, $20, $48, $D7, $88, $18, $80, $3F, $3F, $E0, $C7, $CF, $B8, $98, $7F, $F8
-    .byte $10, $10, $10, $D7, $08, $00, $EF, $F8, $10, $30, $B7, $F7, $30, $DF, $EF, $FF
-    .byte $00, $08, $08, $EF, $08, $10, $EF, $FF, $00, $18, $DB, $FF, $38, $F7, $EF, $FF
-    .byte $7F, $3F, $5F, $4F, $07, $03, $01, $00, $B0, $C0, $E0, $F0, $F8, $FC, $FE, $FE
-    .byte $FE, $FE, $FA, $FA, $FE, $FE, $FE, $00, $1A, $06, $0A, $1A, $3E, $7E, $FE, $01
-    .byte $03, $07, $4F, $5F, $27, $7F, $00, $FF, $FF, $FF, $FF, $FF, $E7, $FF, $00, $7E
-    .byte $BE, $DA, $EA, $F6, $CA, $FC, $00, $FE, $FE, $FA, $FA, $FE, $CE, $FE, $00, $CF
-    .byte $BF, $70, $60, $C4, $C8, $C0, $C0, $47, $BF, $70, $27, $4B, $57, $5F, $DF, $CC
-    .byte $F4, $38, $18, $0C, $0C, $0C, $0C, $CC, $F4, $38, $98, $CC, $EC, $EC, $EC, $C0
-    .byte $C0, $60, $70, $BF, $CF, $00, $00, $DF, $CF, $67, $70, $BF, $4F, $00, $00, $0C
-    .byte $0C, $18, $38, $F4, $CC, $00, $00, $EC, $CC, $98, $38, $F4, $CC, $00, $00, $FF
-    .byte $FF, $C0, $DF, $D0, $D0, $DF, $C0, $00, $00, $3F, $3F, $35, $35, $20, $3F, $FC
-    .byte $FC, $0C, $EC, $2C, $2C, $EC, $0C, $00, $04, $FC, $FC, $5C, $5C, $1C, $FC, $FF
-    .byte $00, $00, $E4, $00, $CF, $00, $00, $7F, $00, $00, $E3, $00, $BF, $00, $00, $FC
-    .byte $00, $00, $F9, $00, $87, $00, $00, $FC, $00, $00, $F7, $00, $67, $00, $00, $FE
-    .byte $02, $02, $02, $FE, $00, $00, $7F, $00, $FE, $0E, $FE, $FE, $00, $00, $00, $7F
-    .byte $40, $40, $40, $7F, $00, $00, $FE, $00, $3F, $30, $3F, $7F, $00, $00, $00, $40
-    .byte $40, $40, $7F, $00, $00, $00, $FF, $3F, $30, $3F, $7F, $00, $00, $FF, $FF, $02
-    .byte $02, $02, $FE, $00, $00, $00, $FF, $FE, $0E, $FE, $FE, $00, $00, $FF, $FF, $FF
-    .byte $FF, $C0, $D0, $C0, $C0, $C0, $C0, $00, $00, $3F, $27, $3F, $3F, $3F, $3F, $FC
-    .byte $FC, $0C, $4C, $0C, $0C, $0C, $0C, $00, $04, $FC, $9C, $FC, $FC, $FC, $FC, $C0
-    .byte $C0, $D0, $C0, $FF, $FF, $00, $00, $3F, $3F, $27, $3F, $3F, $7F, $00, $00, $0C
-    .byte $0C, $4C, $0C, $FC, $FC, $00, $00, $FC, $FC, $9C, $FC, $FC, $FC, $00, $00
-.elif BUILDTARGET == "NES_PAL"
-    .byte $A9, $01, $85, $10, $A5, $05, $29, $01, $85, $05, $A0, $17, $B9, $00, $03, $30
-    .byte $4F, $F0, $66, $C9, $03, $90, $62, $A5, $10, $D0, $49, $B9, $00, $03, $C9, $0F
-    .byte $F0, $57, $BD, $A8, $05, $C9, $03, $D0, $3B, $BD, $B8, $05, $19, $90, $03, $D0
-    .byte $48, $BD, $B0, $05, $18, $69, $10, $B0, $40, $38, $F9, $78, $03, $90, $3A, $C9
-    .byte $28, $B0, $36, $BD, $C0, $05, $18, $69, $10, $38, $F9, $A8, $03, $90, $2A, $C9
-    .byte $28, $B0, $26, $B9, $18, $03, $85, $04, $B9, $30, $03, $85, $05, $4C, $DD, $E9
-    .byte $A5, $10, $F0, $15, $B9, $90, $03, $C9, $01, $F0, $0E, $B9, $18, $03, $C5, $04
-    .byte $D0, $07, $B9, $30, $03, $C5, $05, $F0, $03, $4C, $F3, $EA, $8A, $48, $A5, $10
-    .byte $F0, $25, $10, $14, $B9, $00, $03, $C9, $0F, $D0, $19, $B9, $F0, $03, $D0, $05
-    .byte $A9, $01, $99, $F0, $03, $4C, $F1, $EA, $B9, $00, $03, $10, $07, $B9, $F0, $03
-    .byte $D0, $02, $F0, $1B, $4C, $F1, $EA, $38, $BD, $A8, $05, $AA, $B9, $F0, $03, $CA
-    .byte $D0, $05, $E5, $4D, $4C, $1B, $EA, $FD, $49, $DF, $99, $F0, $03, $B0, $E5, $A5
-    .byte $05, $18, $69, $06, $85, $05, $20, $1F, $EB, $E8, $D0, $03, $4C, $EE, $EA, $A5
-    .byte $10, $F0, $73, $10, $03, $4C, $9F, $EA, $B9, $00, $03, $29, $0F, $C9, $04, $D0
-    .byte $31, $A5, $34, $18, $69, $08, $C9, $81, $90, $02, $A9, $79, $85, $34, $D0, $45
-    .byte $A5, $B6, $4A, $B0, $14, $A9, $04, $20, $ED, $E1, $A5, $B6, $C9, $02, $D0, $01
-    .byte $2C, $A9, $00, $8D, $64, $04, $4C, $96, $EA, $E6, $55, $D0, $02, $C6, $55, $4C
-    .byte $96, $EA, $C9, $0D, $F0, $DA, $38, $E9, $05, $AA, $B5, $4D, $18, $7D, $09, $EC
-    .byte $90, $02, $A9, $FF, $95, $4D, $E8, $CA, $D0, $08, $C9, $1F, $90, $04, $A9, $1E
-    .byte $85, $4D, $20, $14, $E2, $98, $48, $A9, $0B, $20, $71, $87, $68, $A8, $A9, $00
-    .byte $99, $00, $03, $AA, $F0, $45, $B9, $00, $03, $48, $09, $80, $99, $00, $03, $A9
-    .byte $0B, $99, $F0, $03, $68, $A2, $00, $C9, $03, $F0, $07, $C9, $0E, $D0, $1A, $A9
-    .byte $00, $2C, $A9, $05, $20, $A2, $E2, $98, $48, $A9, $09, $20, $71, $87, $68, $A8
-    .byte $A9, $FF, $99, $30, $03, $A9, $00, $F0, $12, $A9, $05, $20, $A2, $E2, $98, $48
-    .byte $A9, $09, $20, $71, $87, $68, $A8, $A1, $04, $29, $F0, $81, $04, $68, $AA, $60
-    .byte $68, $AA, $88, $30, $03, $4C, $6D, $E9, $60, $A2, $01, $A9, $C0, $95, $6B, $A9
-    .byte $FF, $95, $69, $A9, $20, $95, $AA, $95, $AE, $A9, $00, $95, $A8, $95, $AC, $9D
-    .byte $5B, $04, $95, $A0, $95, $A2, $95, $A4, $95, $A6, $CA, $10, $DE, $60, $A2, $01
-    .byte $B5, $AA, $C9, $20, $F0, $03, $4C, $02, $EC, $B9, $60, $03, $95, $AA, $48, $B9
-    .byte $48, $03, $95, $A8, $18, $69, $20, $95, $AC, $68, $69, $00, $95, $AE, $98, $48
-    .byte $B9, $00, $03, $A8, $B9, $48, $00, $85, $0F, $98, $0A, $0A, $A8, $C0, $3C, $F0
-    .byte $04, $A5, $10, $F0, $04, $A0, $04, $D0, $04, $C0, $0C, $D0, $60, $AD, $63, $04
-    .byte $0A, $A8, $90, $20, $B9, $4C, $F4, $95, $A0, $B9, $C8, $F4, $95, $A2, $B9, $4D
-    .byte $F4, $95, $A4, $B9, $C9, $F4, $95, $A6, $AD, $63, $04, $4A, $4A, $A8, $B9, $3C
-    .byte $F4, $4C, $A2, $EB, $B9, $CC, $95, $95, $A0, $B9, $B2, $96, $95, $A2, $B9, $CD
-    .byte $95, $95, $A4, $B9, $B3, $96, $95, $A6, $AD, $63, $04, $4A, $4A, $A8, $B9, $AF
-    .byte $95, $85, $02, $AD, $63, $04, $29, $03, $F0, $08, $A8, $46, $02, $46, $02, $88
-    .byte $D0, $F9, $A5, $02, $29, $03, $A8, $B9, $11, $EC, $4C, $E8, $EB, $A5, $0F, $D0
-    .byte $10, $A9, $38, $95, $A0, $A9, $48, $95, $A2, $A9, $39, $95, $A4, $A9, $49, $D0
-    .byte $12, $B9, $AC, $E4, $95, $A0, $B9, $AD, $E4, $95, $A2, $B9, $AE, $E4, $95, $A4
-    .byte $B9, $AF, $E4, $95, $A6, $A9, $00, $85, $02, $68, $A8, $B9, $C0, $03, $95, $6B
-    .byte $B9, $D8, $03, $95, $69, $49, $FF, $25, $02, $9D, $5B, $04, $A9, $20, $4C
-.endif
-
 
 ;------------------------------------------[ Area music data ]---------------------------------------
 
@@ -4712,84 +4419,10 @@ CopyMap:
     .include "songs/pal/end.asm"
 .endif
 
-;Unused tile patterns.
-.if BUILDTARGET == "NES_NTSC"
-    .byte $80, $40, $20, $10, $88, $00, $00, $00, $00, $00, $00, $00, $80, $04, $00, $02
-    .byte $02, $00, $00, $00, $00, $07, $03, $03, $03, $01, $00, $00, $00, $84, $C4, $42
-    .byte $62, $21, $31, $11, $11, $80, $C0, $C0, $E0, $E0, $F0, $F0, $F0, $00, $00, $00
-    .byte $00, $00, $00, $00, $01, $00, $00, $00, $00, $01, $01, $03, $03, $11, $11, $31
-    .byte $21, $63, $62, $C4, $84, $F0, $F0, $F0, $E0, $E0, $E0, $C0, $80, $01, $13, $16
-    .byte $2C, $78, $B3, $EC, $F0, $07, $1F, $1E, $3C, $78, $F0, $E0, $00, $08, $10, $20
-    .byte $40, $80, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $82, $CC, $4E
-    .byte $4C, $40, $4C, $4C, $4C, $82, $CC, $CE, $CC, $C0, $CC, $CC, $CC, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $01, $03, $06, $0C, $18, $00, $00, $00, $00, $00, $01, $03, $07, $0F, $3C, $E0
-    .byte $84, $08, $30, $60, $E0, $00, $02, $1F, $7A, $F4, $C8, $98, $10, $19, $31, $33
-    .byte $63, $63, $67, $E7, $E7, $06, $0E, $0C, $1C, $1C, $18, $18, $18, $C0, $C0, $80
-    .byte $80, $80, $00, $00, $00, $30, $30, $60, $60, $60, $E0, $E0, $E0, $C7, $C7, $C7
-    .byte $C7, $C7, $C7, $C7, $C7, $38, $38, $38, $38, $38, $38, $38, $38, $20, $20, $20
-    .byte $20, $20, $20, $20, $20, $C0, $C0, $C0, $C0, $C0, $C0, $C0, $C0
-.elif BUILDTARGET == "NES_PAL"
-    .byte $02, $A8, $B9, $D9, $93, $85, $7A, $B9, $DA, $93, $85, $7B, $BD, $4A, $F6, $8D
-    .byte $61, $04, $A9, $00, $85, $7D, $8D, $12, $04, $60, $85, $7D, $0A, $A8, $B1, $7A
-    .byte $C8, $85, $3B, $B1, $7A, $85, $3C, $A9, $00, $85, $16, $85, $17, $85, $18, $85
-    .byte $19, $85, $1A, $85, $46, $85, $3D, $85, $59, $85, $1D, $A9, $90, $85, $1E, $A9
-    .byte $07, $85, $73, $A9, $08, $85, $72, $A9, $24, $85, $37, $A9, $DF, $85, $36, $A9
-    .byte $9F, $85, $38, $A9, $27, $85, $3A, $A9, $00, $A2, $07, $95, $F8, $CA, $10, $FB
-    .byte $A9, $FF, $85, $74, $20, $47, $EF, $60, $A2, $00, $A9, $00, $9D, $00, $06, $E8
-    .byte $D0, $FA, $9D, $00, $07, $E8, $D0, $FA, $60, $A5, $1E, $8D, $00, $20, $A5, $17
-    .byte $4A, $A5, $16, $6A, $8D, $05, $20, $A9, $00, $8D, $05, $20, $60, $A6, $1D, $A9
-    .byte $60, $CA, $F0, $02, $A9, $90, $85, $02, $A5, $2E, $4A, $A5, $2D, $6A, $C5, $02
-    .byte $D0, $08, $A5, $33, $29, $01, $C5, $1D, $F0, $07, $A9, $00, $85, $45, $4C, $FC
-    .byte $EF, $C9, $01, $D0, $00, $AD, $5A, $04, $F0, $05, $A9, $00, $85, $45, $60, $A5
-    .byte $31, $4A, $4A, $4A, $18, $65, $46, $85, $46, $A5, $49, $4A, $90, $0C, $A5, $46
-    .byte $4A, $4A, $85, $45, $A5, $46, $29, $03, $85, $46, $A5, $16, $18, $65, $45, $85
-    .byte $16, $90, $14, $A5, $17, $69, $00, $85, $17, $C9, $02, $D0, $0A, $29, $01, $85
-    .byte $17, $A5, $1E, $49, $01, $85, $1E, $A5, $45, $18, $65, $1A, $85, $1A, $38, $E9
-    .byte $10, $90, $0D, $85, $1A, $E6, $3D, $A5, $3D, $29, $3F, $85, $3D, $20, $18, $F0
-    .byte $A5, $45, $F0, $09, $A9, $08, $85, $72, $A9, $07, $85, $73, $60, $C6, $72, $D0
-    .byte $17
-.endif
-
 .if BUILDTARGET == "NES_NTSC"
     .include "songs/ntsc/intro.asm"
 .elif BUILDTARGET == "NES_PAL"
     .include "songs/pal/intro.asm"
-.endif
-
-;Unused tile patterns.
-.if BUILDTARGET == "NES_NTSC"
-    .byte $E0, $E0, $F0, $00, $00, $00, $00, $00, $00, $00, $00, $21, $80, $40, $02, $05
-    .byte $26, $52, $63, $00, $00, $00, $06, $07, $67, $73, $73, $FF, $AF, $2F, $07, $0B
-    .byte $8D, $A7, $B1, $00, $00, $00, $00, $00, $80, $80, $80, $F8, $B8, $F8, $F8, $F0
-    .byte $F0, $F8, $FC, $00, $00, $00, $00, $00, $00, $00, $00, $07, $07, $07, $07, $07
-    .byte $03, $03, $01, $00, $00, $00, $00, $00, $00, $00, $80, $FF, $C7, $83, $03, $C7
-    .byte $CF, $FE, $EC, $00, $30, $78, $F8, $30, $00, $01, $12, $F5, $EA, $FB, $FD, $F9
-    .byte $1E, $0E, $44, $07, $03, $03, $01, $01, $E0, $10, $48, $2B, $3B, $1B, $5A, $D0
-    .byte $D1, $C3, $C3, $3B, $3B, $9B, $DA, $D0, $D0, $C0, $C0, $2C, $23, $20, $20, $30
-    .byte $98, $CF, $C7, $00, $00, $00, $00, $00, $00, $00, $30, $1F, $80, $C0, $C0, $60
-    .byte $70, $FC, $C0, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $00, $00, $00
-    .byte $00, $00, $00, $80, $80, $C0, $78, $4C, $C7, $80, $80, $C4, $A5, $45, $0B, $1B
-    .byte $03, $03, $00, $3A, $13, $31, $63, $C3, $83, $03, $04, $E6, $E6, $C4, $8E, $1C
-    .byte $3C, $18, $30, $E8, $E8, $C8, $90, $60, $00, $00, $00
-.elif BUILDTARGET == "NES_PAL"
-    .byte $3B, $C8, $48, $B1, $3B, $85, $3C, $68, $85, $3B, $A0, $00, $4C, $54, $F0, $E6
-    .byte $3B, $D0, $02, $E6, $3C, $85, $74, $0A, $AA, $90, $15, $BD, $0B, $99, $85, $75
-    .byte $BD, $0C, $99, $85, $76, $BD, $3C, $95, $85, $56, $BD, $3D, $95, $4C, $77, $F1
-    .byte $BD, $0B, $98, $85, $75, $BD, $0C, $98, $85, $76, $BD, $3C, $94, $85, $56, $BD
-    .byte $3D, $94, $85, $57, $A9, $00, $85, $58, $84, $02, $84, $59, $A9, $01, $85, $03
-    .byte $A9, $0C, $85, $11, $B1, $75, $10, $14, $C9, $FF, $D0, $05, $85, $74, $4C, $49
-    .byte $F0, $C8, $E6, $59, $29, $7F, $85, $0F, $B1, $75, $D0, $04, $85, $0F, $A9, $01
-    .byte $85, $10, $C8, $E6, $59, $A9, $00, $85, $08, $A5, $0F, $48, $0A, $AA, $A5, $38
-    .byte $4A, $A5, $6D, $D0, $16, $90, $0A, $BD, $77, $F3, $48, $BD, $76, $F3, $4C, $FB
-    .byte $F1, $BD, $F3, $F2, $48, $BD, $F2, $F2, $4C, $FB, $F1, $30, $16, $90, $0A, $BD
-    .byte $B3, $96, $48, $BD, $B2, $96, $4C, $FB, $F1, $BD, $CD, $95, $48, $BD, $CC, $95
-    .byte $4C, $FB, $F1, $90, $0A, $BD, $C9, $F4, $48, $BD, $C8, $F4, $4C, $FB, $F1, $BD
-    .byte $4D, $F4, $48, $BD, $4C, $F4, $A6, $02, $95, $E0, $E8, $68, $95, $E0, $E8, $86
-    .byte $02, $68, $85, $05, $48, $4A, $4A, $AA, $A5, $6D, $D0, $06, $BD, $E1, $F2, $4C
-    .byte $22, $F2, $30, $06, $BD, $AF, $95, $4C, $22, $F2, $BD, $3C, $F4, $85, $04, $68
-    .byte $29, $03, $AA, $E8, $A5, $04, $CA, $F0, $05, $4A, $4A
 .endif
 
 .ends
@@ -4804,18 +4437,13 @@ CopyMap:
 
 .include "music_engine.asm"
 
-;----------------------------------------------[ RESET ]--------------------------------------------
-
-ROMSWITCH_RESET:
-.include "reset.asm"
-
 .ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
 .section "ROM Bank $000 - Vectors" bank 0 slot "ROMSwitchSlot" orga $BFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word ROMSWITCH_RESET           ;($BFB0)Reset vector.
-    .word ROMSWITCH_RESET           ;($BFB0)IRQ vector.
+    .word NMI              ;($C0D9)NMI vector.
+    .word RESET            ;($FFB0)Reset vector.
+    .word RESET            ;($FFB0)IRQ vector.
 .ends
 
