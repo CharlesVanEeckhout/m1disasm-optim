@@ -7073,7 +7073,6 @@ WRAMAddrs:
 
 GetNameAddrs:
     jsr GetNameTableAtScrollDir     ;($EB85)Get current name table number.
-    and #$01                        ;Update name table 0 or 3.
     tay                             ;
     lda PPUAddrs,y                  ;Get high PPU addr of nametable(dest).
     ldx WRAMAddrs,y                 ;Get high cart RAM addr of nametable(src).
@@ -7362,7 +7361,6 @@ EndOfRoomHorizontal:
     bne RTS_X196
     ; $01.00 = (ScrollX & 0xF8) / 8 = tile index
     lda ScrollX
-    and #$F8        ; keep upper five bits (redundant)
     lsr
     lsr
     lsr       ; / 8 (make 'em lower five)
@@ -12091,11 +12089,6 @@ TileBlastAnim7:  .byte $07,$06,$0A,$FE ; respawning tile #$74
 TileBlastAnim8:  .byte $07,$06,$0B,$FE ; respawning tile #$78
 TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
 
-.if BUILDTARGET == "NES_NTSC"
-    .byte $00, $00
-.elif BUILDTARGET == "NES_PAL"
-    .byte $01, $02
-.endif
 
 ;-----------------------------------------------[ RESET ]--------------------------------------------
 

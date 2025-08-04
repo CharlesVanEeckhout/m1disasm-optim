@@ -501,7 +501,7 @@ UpdateCannon_RunInstructions:
     bne @endIf_A
         ; instruction delay is zero
         ; reset delay (always to 40 frames)
-        lda CannonInstrDelayTable,y
+        lda #$28
         sta Cannons.0.instrDelay,x
         ; change to next instruction
         inc Cannons.0.instrID,x
@@ -792,7 +792,7 @@ SpawnCannonRoutine:
         tax
         bpl @loop
     ; cannon failed to spawn, because all 16 slots are occupied
-    bmi @RTS ; always return
+    rts
 
 @spawnCannon:
     ; high nibble of special item type is Cannons.0.instrListID
@@ -831,16 +831,13 @@ SpawnMotherBrainRoutine:
     sta MotherBrainHi
     eor #$01
     tax
-    lda L9D3C
+    lda #$01
     ora ScrollBlockOnNameTable3,x
     sta ScrollBlockOnNameTable3,x
     lda #$20
     sta MotherBrainAnimBrainDelay
     sta MotherBrainAnimEyeDelay
     rts
-
-L9D3B:  .byte $02
-L9D3C:  .byte $01
 
 ;-------------------------------------------------------------------------------
 ; Spawns a new Zebetite into Zebetite slot
@@ -894,13 +891,6 @@ SpawnRinkaSpawnerRoutine:
     lda #$FF
 @RTS:
     rts
-
-CannonInstrDelayTable:
-    .byte $28
-    .byte $28
-    .byte $28
-    .byte $28
-    .byte $28
 
 CannonInstrListsOffset:
     .byte CannonInstrList0 - CannonInstrLists
