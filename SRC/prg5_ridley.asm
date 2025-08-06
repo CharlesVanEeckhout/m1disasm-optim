@@ -143,7 +143,7 @@ ChooseEnemyAIRoutine:
         .word RemoveEnemy ; 0B - same as 4
         .word MultiviolaAIRoutine ; 0C - bouncy orbs
         .word RemoveEnemy ; 0D - same as 4
-        .word PolypAIRoutine ; 0E - polyp (unused)
+        .word RemoveEnemy ; 0E - polyp (unused)
         .word RemoveEnemy ; 0F - same as 4
 
 EnemyDeathAnimIndex:
@@ -158,9 +158,9 @@ EnemyDeathAnimIndex:
     .byte $00, $00 ; unused enemy
     .byte EnAnim_11 - EnAnimTbl, EnAnim_11 - EnAnimTbl
     .byte EnAnim_13 - EnAnimTbl, EnAnim_18 - EnAnimTbl
-    .byte EnAnim_28 - EnAnimTbl, EnAnim_28 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_32 - EnAnimTbl, EnAnim_32 - EnAnimTbl
-    .byte EnAnim_34 - EnAnimTbl, EnAnim_34 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
 
@@ -179,9 +179,9 @@ EnemyRestingAnimIndex:
     .byte $00, $00 ; unused enemy
     .byte EnAnim_05 - EnAnimTbl, EnAnim_08 - EnAnimTbl
     .byte EnAnim_13 - EnAnimTbl, EnAnim_18 - EnAnimTbl
-    .byte EnAnim_1D - EnAnimTbl, EnAnim_1D - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_2D - EnAnimTbl, EnAnim_28 - EnAnimTbl
-    .byte EnAnim_34 - EnAnimTbl, EnAnim_34 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
 
@@ -197,9 +197,9 @@ EnemyActiveAnimIndex:
     .byte $00, $00 ; unused enemy
     .byte EnAnim_05 - EnAnimTbl, EnAnim_08 - EnAnimTbl
     .byte EnAnim_13 - EnAnimTbl, EnAnim_18 - EnAnimTbl
-    .byte EnAnim_1D - EnAnimTbl, EnAnim_1D - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_2D - EnAnimTbl, EnAnim_28 - EnAnimTbl
-    .byte EnAnim_34 - EnAnimTbl, EnAnim_34 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
 
@@ -212,7 +212,7 @@ L967B:
     .byte $00 ; unused enemy
     .byte $00
     .byte $00
-    .byte $00 | $80 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00
     .byte $00
     .byte $00 ; unused enemy
@@ -241,7 +241,7 @@ EnemyDistanceToSamusThreshold:
     .byte $00
     .byte $00 ; unused enemy
     .byte $00
-    .byte $6 | (1 << 7) ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
 
@@ -255,15 +255,15 @@ EnemyMovementChoiceOffset:
     .byte EnemyMovementChoice01 - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
-    .byte EnemyMovementChoice03 - EnemyMovementChoices ; enemy moves manually
+    .byte $00 ; enemy moves manually
     .byte EnemyMovementChoice03 - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice04 - EnemyMovementChoices
     .byte EnemyMovementChoice05 - EnemyMovementChoices
-    .byte EnemyMovementChoice06 - EnemyMovementChoices ; unused enemy
+    .byte $00 ; unused enemy
     .byte EnemyMovementChoice07 - EnemyMovementChoices
-    .byte EnemyMovementChoice08 - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice09 - EnemyMovementChoices ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
 
 EnemyMovementPtrs:
@@ -348,20 +348,14 @@ EnemyMovementChoice00:
     EnemyMovementChoiceEntry $04, $05
 EnemyMovementChoice01:
     EnemyMovementChoiceEntry $06, $07
-EnemyMovementChoice02: ; not assigned to any enemy
-    EnemyMovementChoiceEntry $02
 EnemyMovementChoice03: ; enemy moves manually
     EnemyMovementChoiceEntry $09
 EnemyMovementChoice04:
     EnemyMovementChoiceEntry $0D
 EnemyMovementChoice05:
     EnemyMovementChoiceEntry $0E, $0F
-EnemyMovementChoice06:
-    EnemyMovementChoiceEntry $00, $01, $02, $03
-EnemyMovementChoice07: ; unused enemy
+EnemyMovementChoice07:
     EnemyMovementChoiceEntry $10
-EnemyMovementChoice08:
-    EnemyMovementChoiceEntry $11
 EnemyMovementChoice09:
     EnemyMovementChoiceEntry $00
 EnemyMovementChoice0A:
@@ -371,17 +365,8 @@ EnemyMovement00_R:
 EnemyMovement00_L:
 EnemyMovement01_R:
 EnemyMovement01_L:
-    ; nothing
-
-; unused (ripper)
 EnemyMovement02_R:
-    SignMagSpeed $01,  3,  0
-    EnemyMovementInstr_Restart
-
 EnemyMovement02_L:
-    SignMagSpeed $01, -3,  0
-    EnemyMovementInstr_Restart
-
 EnemyMovement03_R:
 EnemyMovement03_L:
 EnemyMovement04_R:
@@ -410,17 +395,9 @@ EnemyMovement0F_R:
 EnemyMovement0F_L:
 EnemyMovement10_R:
 EnemyMovement10_L:
-    ; nothing
-
-; unused (seahorse)
 EnemyMovement11_R:
 EnemyMovement11_L:
-    SignMagSpeed $14,  0, -1
-    SignMagSpeed $0A,  0,  0
-    EnemyMovementInstr_ClearEnJumpDsplcmnt
-    SignMagSpeed $30,  0,  0
-    SignMagSpeed $14,  0,  1
-    EnemyMovementInstr_StopMovementSeahorse
+    ; nothing
 
 EnemyFireballMovement0:
 EnemyFireballMovement1:
@@ -496,10 +473,6 @@ CommonEnemyJump_00_01_02:
 ;-------------------------------------------------------------------------------
 ; Bouncy Orb Routine
 .include "enemies/multiviola.asm"
-
-;-------------------------------------------------------------------------------
-; Polyp (beta?) Routine
-.include "enemies/polyp.asm"
 
 ;-------------------------------------------------------------------------------
 

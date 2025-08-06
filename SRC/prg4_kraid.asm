@@ -159,8 +159,8 @@ EnemyDeathAnimIndex:
     .byte EnAnim_6D - EnAnimTbl, EnAnim_6F - EnAnimTbl
     .byte $00, $00
     .byte $00, $00
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
@@ -180,8 +180,8 @@ EnemyRestingAnimIndex:
     .byte EnAnim_67 - EnAnimTbl, EnAnim_6A - EnAnimTbl
     .byte EnAnim_56 - EnAnimTbl, EnAnim_58 - EnAnimTbl
     .byte EnAnim_5D - EnAnimTbl, EnAnim_62 - EnAnimTbl
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
@@ -198,8 +198,8 @@ EnemyActiveAnimIndex:
     .byte EnAnim_67 - EnAnimTbl, EnAnim_6A - EnAnimTbl
     .byte EnAnim_56 - EnAnimTbl, EnAnim_58 - EnAnimTbl
     .byte EnAnim_5A - EnAnimTbl, EnAnim_5F - EnAnimTbl
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
@@ -217,7 +217,7 @@ L967B:
     .byte $00
     .byte $00
     .byte $00 ; unused enemy
-    .byte $00 | $80 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
@@ -231,11 +231,11 @@ EnemyData0DTbl:
 EnemyDistanceToSamusThreshold:
     .byte $00
     .byte $00
-    .byte $6 | (0 << 7) ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00
     .byte $3 | (1 << 7)
     .byte $00
-    .byte $4 | (1 << 7) ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00
     .byte $00
     .byte $00
@@ -255,7 +255,7 @@ EnemyMovementChoiceOffset:
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice02 - EnemyMovementChoices
     .byte EnemyMovementChoice03 - EnemyMovementChoices
-    .byte EnemyMovementChoice05 - EnemyMovementChoices ; enemy moves manually
+    .byte $00 ; enemy moves manually
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice04 - EnemyMovementChoices
     .byte EnemyMovementChoice06 - EnemyMovementChoices
@@ -355,8 +355,6 @@ EnemyMovementChoice03:
     EnemyMovementChoiceEntry $07
 EnemyMovementChoice04:
     EnemyMovementChoiceEntry $09
-EnemyMovementChoice05: ; enemy moves manually
-    EnemyMovementChoiceEntry $00
 EnemyMovementChoice06:
     EnemyMovementChoiceEntry $0C, $0D
 EnemyMovementChoice07:
@@ -364,15 +362,9 @@ EnemyMovementChoice07:
 EnemyMovementChoice08:
     EnemyMovementChoiceEntry $0F, $10, $11, $0F
 
-; unused (???)
+
 EnemyMovement00_R:
-    SignMagSpeed $20,  2,  2
-    EnemyMovementInstr_FE
-
 EnemyMovement00_L:
-    SignMagSpeed $20, -2,  2
-    EnemyMovementInstr_FE
-
 EnemyMovement01_R:
 EnemyMovement01_L:
 EnemyMovement02_R:

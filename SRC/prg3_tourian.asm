@@ -139,7 +139,7 @@ ChooseEnemyAIRoutine:
     jsr ChooseRoutine
         .word MetroidAIRoutine ; 00 - red metroid
         .word MetroidAIRoutine ; 01 - green metroid
-        .word L9A27 ; 02 - i dunno but it takes 30 damage with varia
+        .word RemoveEnemy ; 02 - i dunno but it takes 30 damage with varia
         .word RemoveEnemy ; 03 - disappears
         .word RinkaAIRoutine ; 04 - rinka
         .word RemoveEnemy ; 05 - same as 3
@@ -158,8 +158,8 @@ ChooseEnemyAIRoutine:
 EnemyDeathAnimIndex:
     .byte EnAnim_08 - EnAnimTbl, EnAnim_08 - EnAnimTbl
     .byte EnAnim_08 - EnAnimTbl, EnAnim_08 - EnAnimTbl
-    .byte EnAnim_16 - EnAnimTbl, EnAnim_16 - EnAnimTbl
-    .byte EnAnim_18 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_1F - EnAnimTbl, EnAnim_1F - EnAnimTbl
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
@@ -179,8 +179,8 @@ EnemyHealthTbl:
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_16 - EnAnimTbl, EnAnim_16 - EnAnimTbl
-    .byte EnAnim_18 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_1B - EnAnimTbl, EnAnim_1B - EnAnimTbl
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
@@ -197,8 +197,8 @@ EnemyRestingAnimIndex:
 EnemyActiveAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_16 - EnAnimTbl, EnAnim_16 - EnAnimTbl
-    .byte EnAnim_18 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_1D - EnAnimTbl, EnAnim_1D - EnAnimTbl
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
@@ -215,7 +215,7 @@ EnemyActiveAnimIndex:
 L967B:
     .byte $00
     .byte $00
-    .byte $00
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $02
     .byte $00 ; unused enemy
@@ -239,7 +239,7 @@ EnemyData0DTbl:
 EnemyDistanceToSamusThreshold:
     .byte $00
     .byte $00
-    .byte $00
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00
     .byte $00 ; unused enemy
@@ -260,9 +260,9 @@ EnemyInitDelayTbl:
 EnemyMovementChoiceOffset:
     .byte EnemyMovementChoice00 - EnemyMovementChoices
     .byte EnemyMovementChoice01 - EnemyMovementChoices
-    .byte EnemyMovementChoice00 - EnemyMovementChoices ; enemy doesn't move
-    .byte EnemyMovementChoice00 - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice02 - EnemyMovementChoices ; enemy moves manually
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; enemy moves manually
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
@@ -357,8 +357,6 @@ EnemyMovementChoice00:
     EnemyMovementChoiceEntry $00
 EnemyMovementChoice01:
     EnemyMovementChoiceEntry $01
-EnemyMovementChoice02: ; enemy moves manually
-    ; nothing
 
 EnemyMovement00_R:
 EnemyMovement00_L:
@@ -430,12 +428,6 @@ CommonEnemyJump_00_01_02:
 ;-------------------------------------------------------------------------------
 ; Metroid Routine
 .include "enemies/metroid.asm"
-
-;-------------------------------------------------------------------------------
-; ???
-L9A27:
-    lda #$01
-    jmp LF438
 
 ;-------------------------------------------------------------------------------
 ; Rinka Routine??
@@ -1120,12 +1112,7 @@ SpawnRinka_InitPositionXY:
     sta EnX,x
     rts
 
-Xplus16:
-    txa
-    clc
-    adc #$10
-    tax
-    rts
+
 
 L9F00: .byte _id_Palette08+1, _id_Palette09+1
 

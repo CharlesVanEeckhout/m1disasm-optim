@@ -9515,6 +9515,13 @@ Yplus16:
     tay
     rts
 
+Xplus16:
+    txa
+    clc
+    adc #$10
+    tax
+    rts
+
 ; X = X - 16
 Xminus16:
     txa
@@ -12002,15 +12009,11 @@ DrawTileBlast: ;($FEDC)
         bne @loop_rows
     ; $01.$00 = PPU address to write tile blast
     ; branch if in RoomRAMA
+    ; write to nametable 0 or 3
     lda $01
     and #$04
-    beq @inNameTable0
-        ; write to nametable 3
-        lda $01
-        ora #$0C
-        sta $01
-    @inNameTable0:
-    lda $01
+    asl
+    ora $01
     and #$2F
     sta $01
     jsr WriteTileBlast

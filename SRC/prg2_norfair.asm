@@ -159,8 +159,8 @@ EnemyDeathAnimIndex:
     .byte EnAnim_NovaExplode - EnAnimTbl, EnAnim_NovaExplode - EnAnimTbl
     .byte EnAnim_GametExplodeFacingRight - EnAnimTbl, EnAnim_GametExplodeFacingLeft - EnAnimTbl
     .byte $00, $00 ; unused enemy
-    .byte EnAnim_11 - EnAnimTbl, EnAnim_11 - EnAnimTbl ; unused enemy
-    .byte EnAnim_13 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_SqueeptExplode - EnAnimTbl, EnAnim_SqueeptExplode - EnAnimTbl
     .byte EnAnim_MultiviolaExplode - EnAnimTbl, EnAnim_MultiviolaExplode - EnAnimTbl
     .byte EnAnim_DragonExplode - EnAnimTbl, EnAnim_DragonExplode - EnAnimTbl
@@ -180,8 +180,8 @@ EnemyRestingAnimIndex:
     .byte EnAnim_NovaOnFloor - EnAnimTbl, EnAnim_NovaOnFloor - EnAnimTbl
     .byte EnAnim_GametRestingFacingRight - EnAnimTbl, EnAnim_GametRestingFacingLeft - EnAnimTbl
     .byte $00, $00 ; unused enemy
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_08 - EnAnimTbl ; unused enemy
-    .byte EnAnim_13 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_SqueeptFalling - EnAnimTbl, EnAnim_SqueeptFalling - EnAnimTbl
     .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTbl, EnAnim_MultiviolaSpinningCounterclockwise - EnAnimTbl
     .byte EnAnim_DragonIdleFacingRight - EnAnimTbl, EnAnim_DragonIdleFacingLeft - EnAnimTbl
@@ -198,8 +198,8 @@ EnemyActiveAnimIndex:
     .byte EnAnim_NovaOnFloor - EnAnimTbl, EnAnim_NovaOnFloor - EnAnimTbl
     .byte EnAnim_GametActiveFacingRight - EnAnimTbl, EnAnim_GametActiveFacingLeft - EnAnimTbl
     .byte $00, $00 ; unused enemy
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_08 - EnAnimTbl ; unused enemy
-    .byte EnAnim_13 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
+    .byte $00, $00 ; unused enemy
+    .byte $00, $00 ; unused enemy
     .byte EnAnim_SqueeptJumping - EnAnimTbl, EnAnim_SqueeptJumping - EnAnimTbl
     .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTbl, EnAnim_MultiviolaSpinningCounterclockwise - EnAnimTbl
     .byte EnAnim_DragonIdleFacingRight - EnAnimTbl, EnAnim_DragonIdleFacingLeft - EnAnimTbl
@@ -210,12 +210,12 @@ L967B:
     .byte $00
     .byte $00
     .byte $00 | $80
-    .byte $02 | $80 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00
     .byte $00
-    .byte $00 | $80 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00
@@ -261,12 +261,12 @@ EnemyMovementChoiceOffset:
     .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy moves manually
     .byte EnemyMovementChoice01 - EnemyMovementChoices
     .byte $00 ; unused enemy
-    .byte EnemyMovementChoice02 - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice03 - EnemyMovementChoices ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
     .byte EnemyMovementChoice04 - EnemyMovementChoices
     .byte EnemyMovementChoice05 - EnemyMovementChoices
     .byte EnemyMovementChoice06 - EnemyMovementChoices
-    .byte EnemyMovementChoice07 - EnemyMovementChoices ; enemy doesn't move
+    .byte $00 ; enemy doesn't move
     .byte $00 ; unused enemy
 
 EnemyMovementPtrs:
