@@ -56,7 +56,31 @@ RandomNumbers: ;$C000
 
 ;------------------------------------------[ Startup ]----------------------------------------------
 
-Startup:
+RESET: ;($BFB0)
+    ;Disables interrupt.
+    sei
+    ;Sets processor to binary mode.
+    cld
+    
+    ;Clear PPU control registers.
+    ldx #$00
+    stx PPUCTRL
+    stx PPUMASK
+    
+    @WaitForVBlank1:
+        lda PPUSTATUS
+        bpl @WaitForVBlank1
+    @WaitForVBlank2:
+        lda PPUSTATUS
+        bpl @WaitForVBlank2
+    
+    ;Reset MMC1 chip. (MSB is set).
+    ora #$FF
+    sta MMC1CTRL
+    sta MMC1CHR0
+    sta MMC1CHR1
+    sta MMC1PRG
+
     lda #$00
     sta MMC1CHR0                    ;Clear bit 0. MMC1 is serial controlled
     sta MMC1CHR0                    ;Clear bit 1
@@ -190,13 +214,21 @@ Startup:
     iny ;Y = 1
     sty SwitchPending               ;Prepare to switch page 0 into lower PRGROM.
     jsr CheckSwitch                 ;($C4DE)
-    bne WaitNMIEnd                  ;Branch always
+    ; fallthrough
 
 ;-----------------------------------------[ Main loop ]----------------------------------------------
 
 ;The main loop runs all the routines that take place outside of the NMI.
 
 MainLoop:
+    @loop_WaitNMIEnd:
+        ;If nonzero, NMI has ended. Else keep waiting.
+        tay
+        lda NMIStatus
+        beq @loop_WaitNMIEnd
+    
+    ;($C000)Update pseudo random numbers.
+    jsr RandomNumbers
     ;($C4DE)Check to see if memory page needs to be switched.
     jsr CheckSwitch
     ;($C266)Update Timers 1, 2 and 3.
@@ -209,18 +241,7 @@ MainLoop:
     ;Wait for next NMI to end.
     lda #$00
     sta NMIStatus
-WaitNMIEnd:
-        ;If nonzero, NMI has ended. Else keep waiting.
-        tay
-        lda NMIStatus
-        bne LC0D3
-        jmp WaitNMIEnd
-
-LC0D3:
-    ;($C000)Update pseudo random numbers.
-    jsr RandomNumbers
-    ;($C0BC)Jump to top of subroutine.
-    jmp MainLoop
+    beq MainLoop ; branch always
 
 ;-------------------------------------[ Non-Maskable Interrupt ]-------------------------------------
 
@@ -12091,11 +12112,6 @@ TileBlastAnim6:  .byte $07,$06,$09,$FE ; respawning tile #$70
 TileBlastAnim7:  .byte $07,$06,$0A,$FE ; respawning tile #$74
 TileBlastAnim8:  .byte $07,$06,$0B,$FE ; respawning tile #$78
 TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
-
-
-;-----------------------------------------------[ RESET ]--------------------------------------------
-
-.include "reset.asm"
 
 .ends
 
