@@ -2431,7 +2431,7 @@ InitializeGame:
         inc SamusStat0B+1
     L930D:
     
-    lda #$01                        ;
+    lda #_id_MoreInit.b
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
     jsr LoadSamusGFX                ;($C5DC)Load Samus GFX into pattern table.
