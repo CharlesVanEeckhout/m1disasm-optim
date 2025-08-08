@@ -107,7 +107,7 @@ NoiseSFXInitPointers:
     .byte $00
 
 NoiseSFXContPointers:
-    .word NoiseSFXContRoutineTbl, RTS_B4EE              ;Noise continue SFX     (2nd).
+    .word NoiseSFXContRoutineTbl, ExitSub              ;Noise continue SFX     (2nd).
     .byte $00
 
 SQ1SFXInitPointers:
@@ -115,7 +115,7 @@ SQ1SFXInitPointers:
     .byte $01
 
 SQ1SFXContPointers:
-    .word SQ1SFXContRoutineTbl, RTS_B4EE              ;SQ2 continue SFX       (6th).
+    .word SQ1SFXContRoutineTbl, ExitSub              ;SQ2 continue SFX       (6th).
     .byte $01
 
 TriSFXInitPointers:
@@ -123,7 +123,7 @@ TriSFXInitPointers:
     .byte $03
 
 TriSFXContPointers:
-    .word TriSFXContRoutineTbl, RTS_B4EE              ;Triangle continue SFX  (8th).
+    .word TriSFXContRoutineTbl, ExitSub              ;Triangle continue SFX  (8th).
     .byte $03
 
 MultiSFXInitPointers:
@@ -146,25 +146,25 @@ MusicInitPointers:
 
 ;Noise Init SFX handling routine addresses:
 NoiseSFXInitRoutineTbl:
-    .word RTS_B4EE                     ;No sound.
+    .word ExitSub                     ;No sound.
     .word ScrewAttackSFXStart                     ;Screw attack init SFX.
     .word MissileLaunchSFXStart                     ;Missile launch init SFX.
     .word BombExplodeSFXStart                     ;Bomb explode init SFX.
     .word SamusWalkSFXStart                     ;Samus walk init SFX.
     .word SpitFlameSFXStart                     ;Spit flame init SFX.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
+    .word ExitSub                     ;No sound.
+    .word ExitSub                     ;No sound.
 
 ;Noise Continue SFX handling routine addresses:
 NoiseSFXContRoutineTbl:
-    .word RTS_B4EE                     ;No sound.
+    .word ExitSub                     ;No sound.
     .word ScrewAttackSFXContinue                     ;Screw attack continue SFX.
     .word MissileLaunchSFXContinue                     ;Missile launch continue SFX.
     .word NoiseSFXContinue                     ;Bomb explode continue SFX.
     .word NoiseSFXContinue                     ;Samus walk continue SFX.
     .word SpitFlameSFXContinue                     ;Spit flame continue SFX.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
+    .word ExitSub                     ;No sound.
+    .word ExitSub                     ;No sound.
 
 ;SQ1 Init SFX handling routine addresses:
 SQ1SFXInitRoutineTbl:
@@ -228,7 +228,7 @@ LoadSQ1SFXInitFlags:
 LoadSQ1SFXContFlags:
     lda SQ1ContSFX                  ;Load A with SQ1 continue flags, (6th SFX cycle).
     ldx #<SQ1SFXContPointers.b        ;Lower address byte in ChooseNextSFXRoutineTbl.
-    ; fallthough
+    ; fallthrough
 
 GotoSFXCheckFlags:
     jsr CheckSFXFlag                ;($B4BD)Checks to see if SFX flags set.
@@ -248,7 +248,6 @@ LoadTriSFXContFlags:
 LoadMultiSFXInitFlags:
     lda MultiSFXFlag                ;Load A with Multi init flags, (3rd SFX cycle).
     ldx #<MultiSFXInitPointers.b      ;Lower address byte in ChooseNextSFXRoutineTbl.
-    jsr CheckSFXFlag                ;($B4BD)Checks to see if SFX or music flags set.
     jsr FindMusicInitIndex          ;($BC53)Find bit containing music init flag.
     ;Add #$08 to MusicInitIndex.
     lda MusicInitIndex
@@ -479,23 +478,21 @@ SelectSFXRoutine_Common:
     sta WriteMultiChannelData
     rts
 
-UpdateContFlags: ;($B493)
-    ;Loads X register with sound channel just changed.
-    ldx ChannelType
-    ;Clear existing continuation SFX flags for that channel.
-    lda NoiseContSFX,x
-    and #$00 ; was this value non-zero at some point in development?
-    ;Load new continuation flags.
-    ora CurrentSFXFlags
-    ;Save results.
-    sta NoiseContSFX,x
-    rts
-
 ClearCurrentSFXFlags:
     ;Once SFX has completed, this block clears the SFX flag from the current flag register.
     lda #$00
     sta CurrentSFXFlags
-    beq UpdateContFlags
+    ; fallthrough
+
+UpdateContFlags: ;($B493)
+    ;Loads X register with sound channel just changed.
+    ldx ChannelType
+    ;Clear existing continuation SFX flags for that channel.
+    lda CurrentSFXFlags
+    ;Save results.
+    sta NoiseContSFX,x
+    rts
+
 
 IncrementSFXFrame:
     ;Load SFX channel number.
@@ -505,66 +502,66 @@ IncrementSFXFrame:
     lda ThisNoiseFrame,x
     ;Check to see if current frame is last frame to play.
     cmp NoiseSFXLength,x
-    bne RTS_B4BC
+    bne @RTS
         ;If current frame is last frame, reset current frame to 0.
         lda #$00
         sta ThisNoiseFrame,x
-    RTS_B4BC:
+    @RTS:
     rts
 
 
 CheckSFXFlag:
     ;Store any set flags in $064D.
     sta CurrentSFXFlags
+    ;Push current SFX flags on stack.
+    pha
     ;Prepare pointer to SFX data
     stx SoundE4
     ldy #>NoiseSFXInitPointers.b
     sty SoundE4+1.b
-    ;Y=0 for counting loop ahead.
-    ldy #$00
-    LB4C8:
+    
+    ;set y for counting loop ahead.
+    ldy #$03
+    @loop_A:
         ;Loads either SFXInitPointers or SFXContPointers into $E0-$E3
         lda (SoundE4),y
         sta SoundE0,y
-        iny
-        tya
         ;Loop repeats four times to load the values.
-        cmp #$04
-        bne LB4C8
+        dey
+        bpl @loop_A
+    
+    ldy #$04
     lda (SoundE4),y
     sta ChannelType                 ;#$00=SQ1,#$01=SQ2,#$02=Triangle,#$03=Noise
+    
     ;Set y to 0 for counting loop ahead.
     ldy #$00
-    ;Push current SFX flags on stack.
-    lda CurrentSFXFlags
-    pha
-    LB4DE:
+    @loop_B:
         ;This portion of the routine loops a maximum of eight times looking for
         ;any SFX flags that have been set in the current SFX cycle.
         asl CurrentSFXFlags
-        ;If a flag is found, Branch to SFXFlagFound for further processing
-        bcs SFXFlagFound
+        ;If a flag is found, Branch to @SFXFlagFound for further processing
+        bcs @SFXFlagFound
         ;no flags are set, continue to next SFX cycle.
         iny
         iny
         tya
         cmp #$10
-        bne LB4DE
+        bne @loop_B
 
 ;Restore original data in CurrentSFXFlags.
-RestoreSFXFlags:
+@RestoreSFXFlags:
     pla
     sta CurrentSFXFlags
-RTS_B4EE:
     rts
 
-SFXFlagFound:
+@SFXFlagFound:
     lda (SoundE0),y                 ;This routine stores the starting address of the-->
     sta SoundE2                     ;specific SFX handling routine for the SFX flag-->
     iny                             ;found.  The address is stored in registers-->
     lda (SoundE0),y                 ;$E2 and $E3.
     sta SoundE2+1.b                   ;
-    jmp RestoreSFXFlags             ;($B4EA)Restore original data in CurrentSFXFlags.
+    jmp @RestoreSFXFlags             ;($B4EA)Restore original data in CurrentSFXFlags.
 
 ;-----------------------------------[ SFX Handling Routines ]---------------------------------------
 
@@ -596,7 +593,6 @@ ScrewAttackSFXStart:
     jsr SelectSFXRoutine            ;($B452)Setup registers for SFX.
     lda ScrewAttSFXData+2                       ;#$00.
     sta NoiseSFXData                ;Clear NoiseSFXData.
-RTS_B538:
     rts
 
 ScrewAttackSFXContinue:
@@ -604,8 +600,10 @@ ScrewAttackSFXContinue:
     cmp #$02                        ;after the tenth frame of the SFX.
     beq LB549                       ;Branch if not ready to increment.
     jsr IncrementSFXFrame           ;($B4A9)Get next databyte to process in SFX.
-    bne RTS_B538                    ;
-    inc ScrewAttackSFXData          ;Increment every fifth frame.
+    bne @RTS
+        ;Increment every fifth frame.
+        inc ScrewAttackSFXData
+    @RTS:
     rts
 
 LB549:
@@ -617,7 +615,7 @@ LB549:
     inc MultiSFXData                ;Increment MultiSFXData.  When it is equal to #$0F-->
     lda MultiSFXData                ;end screw attack SFX.  MultiSFXData does not-->
     cmp #$0F                        ;appear to be linked to multi SFX channels in-->
-    bne RTS_B538                    ;this routine.
+    bne ScrewAttackSFXContinue@RTS                    ;this routine.
     jmp EndNoiseSFX                 ;($B58F)End SFX.
 
 IncrementPeriodIndex:
@@ -630,7 +628,7 @@ IncrementPeriodIndex:
 MissileLaunchSFXStart:
     lda #$18                        ;Number of frames to play sound before a change.
     ldy #<MissileLaunchSFXData.b      ;Lower byte of sound data start address(base=$B200).
-    jsr GotoSelectSFXRoutine        ;($B587)Prepare to setup registers for SFX.
+    jsr SelectSFXRoutine        ;($B587)Prepare to setup registers for SFX.
     lda #$0A                        ;
     sta NoiseSFXData                ;Start increment index for noise channel at #$0A.
     rts
@@ -1654,7 +1652,6 @@ LoadMusicInitFlags:
     lda MusicInitFlag               ;Load A with Music flags, (10th SFX cycle).
     ldx #<MusicContPointers.b         ;Lower address byte in ChooseNextSFXRoutineTbl.
 LBC42:
-    jsr CheckSFXFlag                ;($B4BD)Checks to see if SFX or music flags set.
     jsr FindMusicInitIndex          ;($BC53)Find bit containing music init flag.
     jmp (SoundE2)                     ;If no flag found, Jump to next SFX cycle,-->
                                         ;else jump to specific SFX handling subroutine.
@@ -1670,6 +1667,7 @@ ContinueMusic:                          ;11th and last SFX cycle.
 ;#$08=Fade in music, #$09=Power up music, #$0A=End game music, #$0B=Intro music.
 
 FindMusicInitIndex:
+    jsr CheckSFXFlag                ;($B4BD)Checks to see if SFX or music flags set.
     ;Load MusicInitIndex with #$FF.
     lda #$FF
     sta MusicInitIndex
